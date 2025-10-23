@@ -1,0 +1,194 @@
+table 50116 "Lease"
+{
+    DataClassification = CustomerContent;
+    Caption = 'Lease';
+    DrillDownPageId = "Lease List";
+    LookupPageId = "Lease List";
+
+    fields
+    {
+        field(1; "No."; Code[20])
+        {
+            Caption = 'Lease No.';
+            DataClassification = CustomerContent;
+        }
+        field(2; "Tenant No."; Code[20])
+        {
+            Caption = 'Tenant No.';
+            DataClassification = CustomerContent;
+            TableRelation = Customer;
+        }
+        field(3; "Property No."; Code[20])
+        {
+            Caption = 'Property No.';
+            DataClassification = CustomerContent;
+            TableRelation = Property;
+        }
+        field(4; "Unit No."; Code[20])
+        {
+            Caption = 'Unit No.';
+            DataClassification = CustomerContent;
+            TableRelation = Unit;
+        }
+        field(5; "Start Date"; Date)
+        {
+            Caption = 'Start Date';
+            DataClassification = CustomerContent;
+        }
+        field(6; "End Date"; Date)
+        {
+            Caption = 'End Date';
+            DataClassification = CustomerContent;
+        }
+        field(7; Duration; Integer)
+        {
+            Caption = 'Duration (Months)';
+            DataClassification = CustomerContent;
+        }
+        field(8; "Rent Amount"; Decimal)
+        {
+            Caption = 'Rent Amount';
+            DataClassification = CustomerContent;
+            AutoFormatType = 1;
+            TableRelation = Unit."Rent Amount";
+        }
+        field(9; "Security Deposit"; Decimal)
+        {
+            Caption = 'Security Deposit';
+            DataClassification = CustomerContent;
+            AutoFormatType = 1;
+        }
+        field(10; "Payment Frequency"; Enum "Payment Frequency")
+        {
+            Caption = 'Payment Frequency';
+            DataClassification = CustomerContent;
+        }
+        field(11; "Escalation %"; Decimal)
+        {
+            Caption = 'Escalation %';
+            DataClassification = CustomerContent;
+            DecimalPlaces = 2 : 2;
+        }
+        field(12; "Renewal Option"; Enum "Renewal Option")
+        {
+            Caption = 'Renewal Option';
+            DataClassification = CustomerContent;
+        }
+        field(13; "Utilities & Service Charges"; Decimal)
+        {
+            Caption = 'Utilities & Service Charges';
+            DataClassification = CustomerContent;
+            AutoFormatType = 1;
+        }
+        field(14; "Lease Status"; Enum "Lease Status")
+        {
+            Caption = 'Lease Status';
+            DataClassification = CustomerContent;
+        }
+        field(15; "Signed Date"; Date)
+        {
+            Caption = 'Signed Date';
+            DataClassification = CustomerContent;
+        }
+        field(16; "Notice Period"; Integer)
+        {
+            Caption = 'Notice Period (Days)';
+            DataClassification = CustomerContent;
+        }
+        field(17; "Auto Renew"; Boolean)
+        {
+            Caption = 'Auto Renew';
+            DataClassification = CustomerContent;
+        }
+        field(18; "Renewal Count"; Integer)
+        {
+            Caption = 'Renewal Count';
+            DataClassification = CustomerContent;
+            Editable = false;
+        }
+        field(19; "Previous Lease No."; Code[20])
+        {
+            Caption = 'Previous Lease No.';
+            DataClassification = CustomerContent;
+            TableRelation = Lease;
+        }
+        field(20; "Created Date"; DateTime)
+        {
+            Caption = 'Created Date';
+            DataClassification = CustomerContent;
+            Editable = false;
+        }
+        field(21; "Created By"; Code[50])
+        {
+            Caption = 'Created By';
+            DataClassification = EndUserIdentifiableInformation;
+            Editable = false;
+        }
+        field(22; "Owner No."; Code[50])
+        {
+            DataClassification = CustomerContent;
+            TableRelation = Vendor;
+        }
+    }
+
+    keys
+    {
+        key(PK; "No.")
+        {
+            Clustered = true;
+        }
+        key(Tenant; "Tenant No.") { }
+        key(Unit; "Unit No.") { }
+        key(Status; "Lease Status") { }
+        key(Dates; "Start Date", "End Date") { }
+    }
+
+    trigger OnInsert()
+    var
+        NoSeriesMgt: Codeunit "No. Series";
+        PropertySetup: Record "Property Setup";
+    begin
+
+        if "No." = '' then
+            PropertySetup.Get();
+        PropertySetup.TestField("Lease No.");
+
+        Rec."No." := NoSeriesMgt.GetNextNo(PropertySetup."Lease No.", 0D, true)
+
+    end;
+
+    trigger OnModify()
+    begin
+        UpdateDuration();
+    end;
+
+    // trigger OnModify()
+    // var unit: Record Unit;
+    // begin
+    //     if("Lease Status" = "Lease Status"::Active) then begin
+    //         if unit.Get() then begin
+    //             unit.Validate("Unit Status", unit."Unit Status"::Occupied);
+    //             unit.Modify();
+    //         end;
+    //     end else
+    //     if("Lease Status" = "Lease Status"::Expired) then begin
+    //         if unit.Get() then begin
+    //             unit.Validate("Unit Status",unit."Unit Status"::Vacant);
+
+    //         end;
+    //     end;
+    //     begin
+    //         UpdateDuration();
+
+    //     end;
+
+    // end;
+
+    local procedure UpdateDuration()
+    begin
+        if ("Start Date" <> 0D) and ("End Date" <> 0D) then
+            Duration := ("End Date" - "Start Date") div 30;
+    end;
+
+
+}
