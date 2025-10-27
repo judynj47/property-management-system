@@ -96,7 +96,15 @@ tableextension 50111 "Customer Tenant Ext" extends Customer
         field(50117; "Unit No."; Code[20])
         {
             DataClassification = CustomerContent;
-            TableRelation = Unit."No.";
+            TableRelation = Unit;
+        }
+        field(50118; Tenant; Boolean)
+        {
+            DataClassification = CustomerContent;
+        }
+        field(50119; "Rent Amount"; Decimal)
+        {
+            DataClassification = CustomerContent;
         }
 
 

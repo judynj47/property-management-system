@@ -14,7 +14,7 @@ table 50146 "Tenant Unit Link"
         field(2; "Unit No."; Code[20])
         {
             Caption = 'Unit No.';
-            TableRelation = "Property Unit"."Unit No.";
+            TableRelation = Unit;
         }
 
         field(3; "Start Date"; Date)

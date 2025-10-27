@@ -121,7 +121,7 @@ table 50101 "Property"
         field(13; "Owner No."; Code[20])
         {
             DataClassification = ToBeClassified;
-            TableRelation = Vendor;
+            TableRelation = Vendor where("No." = field("Owner No."));
         }
         field(14; "Ownership Type"; Enum "Ownership Type")
         {
@@ -149,14 +149,25 @@ table 50101 "Property"
         {
             Caption = 'Total Units';
             DataClassification = CustomerContent;
-            //Editable = false;
+            Editable = false;
+
+            trigger OnValidate()
+            var
+                UnitNosRec: Record Unit;
+            begin
+                UnitNosRec.Reset();
+                UnitNosRec.SetRange("Property No.", Rec."Property ID");
+                Rec."Total Units" := UnitNosRec.Count;
+            end;
         }
         field(19; "Occupied Units"; Integer)
         {
             Caption = 'Occupied Units';
-            DataClassification = CustomerContent;
-            //Editable = false;
+            FieldClass = FlowField;
+            CalcFormula = Count("Property Unit" WHERE("Property No." = FIELD("Property ID"),
+                                              "Unit Status" = CONST(Occupied)));
         }
+
         field(20; "Vacancy Rate"; Decimal)
         {
             Caption = 'Vacancy Rate %';
@@ -229,8 +240,6 @@ table 50101 "Property"
             "Property ID" := NoSeriesMgt.GetNextNo(PropertySetup."Property No.", 0D, true);
         end;
     end;
-
-
 
 
     [IntegrationEvent(false, false)]

@@ -77,6 +77,20 @@ pageextension 50132 "Customer Card Tenant Ext" extends "Customer Card"
                 ToolTip = 'Specifies the date of birth.';
             }
 
+            field("Rent Amount"; Rec."Rent Amount")
+            {
+                ApplicationArea = All;
+                ToolTip = 'Specifies the value of the Rent Amount field.', Comment = '%';
+            }
+
+            field(Tenant; Rec.Tenant)
+            {
+                ApplicationArea = All;
+                ToolTip = 'Specifies the value of the Tenant field.', Comment = '%';
+                Caption = 'Unit Tenant';
+            }
+
+
         }
 
         addlast("Address & Contact")
@@ -132,25 +146,25 @@ pageextension 50132 "Customer Card Tenant Ext" extends "Customer Card"
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies the current property.';
-                    Editable = false;
+                    //Editable = false;
                 }
                 field("Current Unit No."; Rec."Current Unit No.")
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies the current unit.';
-                    Editable = false;
+                    //Editable = false;
                 }
                 field("Current Lease No."; Rec."Current Lease No.")
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies the current lease.';
-                    Editable = false;
+                    //Editable = false;
                 }
                 field("Move-in Date"; Rec."Move-in Date")
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies the move-in date.';
-                    Editable = false;
+                    //Editable = false;
                 }
                 field("Move-out Date"; Rec."Move-out Date")
                 {
@@ -166,13 +180,13 @@ pageextension 50132 "Customer Card Tenant Ext" extends "Customer Card"
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies the security deposit amount.';
-                    Editable = false;
+                    //Editable = false;
                 }
                 field("Deposit Refunded"; Rec."Deposit Refunded")
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies if the deposit has been refunded.';
-                    Editable = false;
+                    //Editable = false;
                 }
             }
         }

@@ -14,16 +14,7 @@ table 50128 Amenity
                 if aty.Get("Amenity ID") then
                     Amenity := aty.Amenity;
             end;
-            //  trigger OnValidate()
-            // var
-            //     Unit: Record "Course Unit";
-            // begin
-            //     if Unit.Get("Unit Code") then
-            //         "Unit name" := Unit."Unit name";
-            //     "Credit Hours" := Unit."Credit Hours";
-            //     //"Faculty" := Unit."Faculty";
 
-            // end;
 
         }
         field(2; "Amenity"; Enum Amenity)

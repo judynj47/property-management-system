@@ -35,6 +35,10 @@ page 50125 "Property SetUp"
                 {
                     ToolTip = 'Specifies the value of the Customer Nos. field.', Comment = '%';
                 }
+                // field("Clause ID"; Rec."Clause ID")
+                // {
+                //     ToolTip = 'Specifies the value of the Clause ID field.', Comment = '%';
+                // }
             }
         }
     }

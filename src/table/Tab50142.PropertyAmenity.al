@@ -21,10 +21,10 @@ table 50142 "Property Amenity"
             DataClassification = CustomerContent;
             trigger OnValidate()
             var
-                aty: Record Amenity;
+                AmenityRec: Record Amenity;
             begin
-                if aty.Get("Amenity ID") then
-                    Rec.Description := aty.Amenity;
+                if AmenityRec.Get("Amenity ID") then
+                    Rec.Description := AmenityRec.Amenity;
             end;
         }
 
@@ -64,18 +64,4 @@ table 50142 "Property Amenity"
         }
     }
 
-    // trigger OnInsert()
-    // var
-    //     PropertyRec: Record Property;
-    //     AmenityRec: Record Amenity;
-    // begin
-    //     if not PropertyRec.Get("Property No.") then
-    //         Error('Property %1 does not exist.', "Property No.");
-
-    //     if not AmenityRec.Get("Amenity ID") then
-    //         Error('Amenity %1 does not exist.', "Amenity ID");
-
-    //     if "Date Added" = 0D then
-    //         "Date Added" := Today;
-    // end;
 }

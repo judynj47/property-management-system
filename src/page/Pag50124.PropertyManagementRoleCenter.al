@@ -36,7 +36,13 @@ page 50124 "Property Management RoleCenter"
                     RunObject = page "Property List";
 
                 }
+                action("Units")
+                {
+                    ApplicationArea = All;
+                    Caption = 'Units';
+                    RunObject = page "Unit List";
 
+                }
 
 
                 action("Owners")
@@ -47,13 +53,18 @@ page 50124 "Property Management RoleCenter"
 
                 }
 
-
-
                 action("Amenity Setup")
                 {
                     ApplicationArea = All;
                     Caption = 'Amenities';
                     RunObject = page "Amenity List";
+
+                }
+                action("Special Clauses Setup")
+                {
+                    ApplicationArea = All;
+                    Caption = 'Special Clauses';
+                    RunObject = page "Special Clauses List";
 
                 }
 

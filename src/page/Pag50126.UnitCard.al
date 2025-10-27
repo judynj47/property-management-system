@@ -62,23 +62,23 @@ page 50126 "Unit Card"
             }
 
         }
-    }
-
-    actions
-    {
-        area(Processing)
+        area(factboxes)
         {
-            action(ActionName)
+
+            part("Attached Documents List"; "Doc. Attachment List Factbox")
             {
 
-                trigger OnAction()
-                begin
+                Visible = true;
+                ApplicationArea = All;
+                Caption = 'Documents';
+                UpdatePropagation = Both;
+                SubPageLink = "Table ID" = const(Database::Unit),
+                              "No." = field("No.");
 
-                end;
+
+
             }
         }
     }
 
-    var
-        myInt: Integer;
 }

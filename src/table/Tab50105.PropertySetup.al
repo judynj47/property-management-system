@@ -39,6 +39,12 @@ table 50105 "Property Setup"
             TableRelation = "No. Series";
             DataClassification = CustomerContent;
         }
+        // field(8; "Clause ID"; Code[20])
+        // {
+        //     DataClassification = CustomerContent;
+        //     TableRelation = "No. Series";
+
+        // }
 
     }
 

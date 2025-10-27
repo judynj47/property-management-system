@@ -75,6 +75,7 @@ table 50106 Unit
     var
         NoSeriesMgt: Codeunit "No. Series";
         PropertySetup: Record "Property Setup";
+
     begin
 
         if "No." = '' then
@@ -84,6 +85,9 @@ table 50106 Unit
         Rec."No." := NoSeriesMgt.GetNextNo(PropertySetup."Unit No.", 0D, true)
 
     end;
+
+
+
 
 
 }

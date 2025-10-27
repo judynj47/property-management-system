@@ -119,67 +119,6 @@ codeunit 50134 "Tenant Workflow Mgmt"
         end;
     end;
 
-    //     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Approvals Mgmt.", 'OnApproveApprovalRequest', '', true, true)]
-    // local procedure OnApproveApprovalRequest(var ApprovalEntry: Record "Approval Entry")
-    // var
-    //     TenantApplication: Record "Tenant Application";
-    //     ApprovedTenant: Record "Approved Tenant";
-    //     Customer: Record Customer;
-    //     NoSeries: Codeunit "No. Series";
-    //     PropertySetup: Record "Property Setup";
-    //     CustNo: Code[20];
-    // begin
-    //     if ApprovalEntry."Table ID" = Database::"Tenant Application" then begin
-    //         if TenantApplication.Get(ApprovalEntry."Document No.") then begin
-
-    //             // Update status
-    //             TenantApplication.Validate("Tenant Application Status", TenantApplication."Tenant Application Status"::Approved);
-    //             TenantApplication.Modify(true);
-
-    //             // Create Approved Tenant log entry (for reporting)
-    //             if not ApprovedTenant.Get(TenantApplication."Application ID") then begin
-    //                 ApprovedTenant.Init();
-    //                 ApprovedTenant."Application ID" := TenantApplication."Application ID";
-    //                 ApprovedTenant."Tenant Name" := TenantApplication."Tenant Name";
-    //                 ApprovedTenant."Tenant Type" := TenantApplication."Tenant Type";
-    //                 ApprovedTenant."National ID/Passport" := TenantApplication."National ID/Passport";
-    //                 ApprovedTenant."Tenant Category" := TenantApplication."Tenant Category";
-    //                 ApprovedTenant."Approval Date" := Today();
-    //                 ApprovedTenant.Insert(true);
-    //             end;
-
-    //             // Create customer (extended table)
-    //             if not PropertySetup.Get() then
-    //                 Error('Property Setup record is missing.');
-    //             PropertySetup.TestField("Customer Nos.");
-    //             CustNo := NoSeries.GetNextNo(PropertySetup."Customer Nos.", WorkDate(), true);
-
-    //             if not Customer.Get(CustNo) then begin
-    //                 Customer.Init();
-    //                 Customer."No." := CustNo;
-    //                 Customer.Name := TenantApplication."Tenant Name";
-    //                 Customer.Insert(true);
-    //             end;
-
-    //             // Populate extended tenant fields
-    //             Customer.Validate("Tenant Type", TenantApplication."Tenant Type");
-    //             Customer.Validate("National ID/Passport", TenantApplication."National ID/Passport");
-    //             Customer.Validate("Tenant Category", TenantApplication."Tenant Category");
-    //             Customer.Validate("Unit No.", TenantApplication."Unit No.");
-    //             Customer.Validate("Tenant Application ID", TenantApplication."Application ID");
-    //             Customer.Validate("Tenant Status", Customer."Tenant Status"::Active);
-    //             Customer.Modify(true);
-
-    //             // Link customer to approved tenant (optional)
-    //             ApprovedTenant."Linked Customer No." := Customer."No.";
-    //             ApprovedTenant.Modify(true);
-
-    //             Message(
-    //               'Tenant %1 has been approved and created as customer %2.',
-    //               TenantApplication."Tenant Name", Customer."No.");
-    //         end;
-    //     end;
-    // end;
 
 
 
@@ -221,7 +160,7 @@ codeunit 50134 "Tenant Workflow Mgmt"
     var
         RecRef: RecordRef;
         CustomWorkflowHdr: Record "Tenant Application";
-        v: Codeunit "Record Restriction Mgt.";
+
     begin
         case ApprovalEntry."Table ID" of
             Database::"Tenant Application":
@@ -234,25 +173,6 @@ codeunit 50134 "Tenant Workflow Mgmt"
         end;
     end;
 
-    //     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Approvals Mgmt.", 'OnRejectApprovalRequest', '', false, false)]
-    // local procedure OnRejectApprovalRequest(var ApprovalEntry: Record "Approval Entry")
-    // var
-    //     TenantApp: Record "Tenant Application";
-    //     ApprovedTenant: Record "Approved Tenant";
-    // begin
-    //     if ApprovalEntry."Table ID" = Database::"Tenant Application" then begin
-    //         if TenantApp.Get(ApprovalEntry."Document No.") then begin
-    //             TenantApp.Validate("Tenant Application Status", TenantApp."Tenant Application Status"::Rejected);
-    //             TenantApp.Modify(true);
-
-    //             if ApprovedTenant.Get(TenantApp."Application ID") then
-    //                 ApprovedTenant.Delete();
-
-    //             Message('Tenant application %1 has been rejected and removed from Approved Tenants.', TenantApp."Application ID");
-    //         end;
-    //     end;
-    // end;
-
 
 
     var
@@ -264,21 +184,7 @@ codeunit 50134 "Tenant Workflow Mgmt"
         NoWorkflowEnabledErr: Label 'No approval workflow for this record type is enabled.';
         WorkflowSendForApprovalEventDescTxt: Label 'Approval of %1 is requested.';
         WorkflowCancelForApprovalEventDescTxt: Label 'Approval of %1 is canceled.';
-        // vendor: Page "Sales Invoice";
-        // sales: Record "Sales Header";
-        // vendor: Page "Vendor Card";
-        // ven: Record Vendor;
-        customer: Page "Customer Card";
-        // cus: Record Customer;
-        // rep: Report "Customer Statement";
-        // v: Page "Sales Order";
-        // S: Record "Sales Header";
-        C: Record Customer;
-        P: Page "Customer Details FactBox";
-        s: Page "Sales & Receivables Setup";
-        invoice: Record "Sales Invoice Header";
-        si: Page "Sales Invoice Subform";
-        st: Page "Sales & Receivables Setup";
+
 
 
 

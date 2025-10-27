@@ -68,8 +68,14 @@ page 50127 "Lease Agreement Card"
                 }
 
             }
+            part(SpecialClauses; "Special Clauses Subform")
+            {
+                ApplicationArea = All;
+                SubPageLink = "Lease No." = FIELD("No.");
+            }
         }
     }
+
 
     actions
     {
@@ -92,6 +98,7 @@ page 50127 "Lease Agreement Card"
             }
         }
     }
+
 
 
     var

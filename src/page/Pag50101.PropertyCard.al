@@ -144,46 +144,26 @@ page 50101 "Property Card"
             }
 
         }
-        area(FactBoxes)
+
+
+
+        area(factboxes)
         {
-            part("Document Attachments"; "Doc. Attachment List Factbox")
+
+            part("Attached Documents List"; "Doc. Attachment List Factbox")
             {
+
+                Visible = true;
                 ApplicationArea = All;
                 Caption = 'Documents';
-                SubPageLink = "Table ID" = CONST(50101),
-                      "No." = FIELD("Property ID");
+                UpdatePropagation = Both;
+                SubPageLink = "Table ID" = const(Database::Property),
+                              "No." = field("Property ID");
+
+
+
             }
         }
-
-
-        // area(factboxes)
-        // {
-        //     part("Attached Documents"; "Doc. Attachment List Factbox")
-        //     {
-        //         ObsoleteTag = '25.0';
-        //         ObsoleteState = Pending;
-        //         ObsoleteReason = 'The "Document Attachment FactBox" has been replaced by "Doc. Attachment List Factbox", which supports multiple files upload.';
-        //         ApplicationArea = All;
-        //         Visible = false;
-        //         Caption = 'Attachments';
-        //         SubPageLink = "Table ID" = CONST(50101),
-        //           "No." = FIELD("Property ID");
-        //         // SubPageLink = "Table ID" = const(Database::Property),
-        //         //               "No." = field("Property ID");
-
-        //     }
-
-        //     part("Attached Documents List"; "Doc. Attachment List Factbox")
-        //     {
-        //         ApplicationArea = All;
-        //         Caption = 'Documents';
-        //         UpdatePropagation = Both;
-        //         SubPageLink = "Table ID" = const(Database::Property),
-        //                       "No." = field("Property ID");
-
-        //     }
-
-        // }
 
 
 
@@ -209,25 +189,10 @@ page 50101 "Property Card"
                         DocumentAttachmentDetails: Page "Document Attachment Details";
                         RecRef: RecordRef;
                     begin
-                        if Rec."Property ID" = '' then
-                            Error('Please save the record before uploading attachments.');
-
                         RecRef.GetTable(Rec);
                         DocumentAttachmentDetails.OpenForRecRef(RecRef);
                         DocumentAttachmentDetails.RunModal();
                     end;
-
-
-
-                    // trigger OnAction()
-                    // var
-                    //     DocumentAttachmentDetails: Page "Document Attachment Details";
-                    //     RecRef: RecordRef;
-                    // begin
-                    //     RecRef.GetTable(Rec);
-                    //     DocumentAttachmentDetails.OpenForRecRef(RecRef);
-                    //     DocumentAttachmentDetails.RunModal();
-                    // end;
                 }
 
 
@@ -236,4 +201,14 @@ page 50101 "Property Card"
         }
 
     }
+
+    trigger OnQueryClosePage(CloseAction: Action): Boolean
+    var
+        PropertyUnit: Record "Property Unit";
+    begin
+        PropertyUnit.ValidateUnitNo(Rec."Property ID");
+    end;
+
+
+
 }

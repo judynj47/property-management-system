@@ -21,24 +21,8 @@ page 50131 "Amenity List"
                 }
             }
         }
-        // area(Factboxes)
-        // {
 
-        // }
     }
 
-    actions
-    {
-        area(Processing)
-        {
-            action(ActionName)
-            {
 
-                trigger OnAction()
-                begin
-
-                end;
-            }
-        }
-    }
 }

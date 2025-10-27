@@ -149,23 +149,6 @@ page 50134 "Tenant Application Card"
                     end;
                 }
 
-
-                // action(Approve)
-                // {
-
-                //     ApplicationArea = All;
-                //     Caption = 'Approve';
-                //     Image = Approve;
-                //     Promoted = true;
-                //     PromotedCategory = New;
-                //     Visible = OpenApprovalEntriesExistCurrUser;
-
-
-                //     trigger OnAction()
-                //     begin
-                //         ApprovalsMgmt.ApproveRecordApprovalRequest(Rec.RecordId);
-                //     end;
-                // }
                 action(Reject)
                 {
                     ApplicationArea = All;
@@ -190,20 +173,6 @@ page 50134 "Tenant Application Card"
                 }
 
 
-                // action(Reject)
-                // {
-                //     ApplicationArea = All;
-                //     Caption = 'Reject';
-                //     Image = Reject;
-                //     Promoted = true;
-                //     PromotedCategory = New;
-                //     Visible = OpenApprovalEntriesExistCurrUser;
-
-                //     trigger OnAction()
-                //     begin
-                //         ApprovalsMgmt.RejectRecordApprovalRequest(Rec.RecordId);
-                //     end;
-                // }
                 action(Delegate)
                 {
                     ApplicationArea = All;
@@ -226,22 +195,6 @@ page 50134 "Tenant Application Card"
                             CurrPage.Update();
                     end;
                 }
-
-
-                // action(Delegate)
-                // {
-                //     ApplicationArea = All;
-                //     Caption = 'Delegate';
-                //     Image = Delegate;
-                //     Promoted = true;
-                //     PromotedCategory = New;
-                //     Visible = OpenApprovalEntriesExistCurrUser;
-
-                //     trigger OnAction()
-                //     begin
-                //         ApprovalsMgmt.DelegateRecordApprovalRequest(Rec.RecordId);
-                //     end;
-                // }
 
                 action(Comment)
                 {
@@ -298,17 +251,6 @@ page 50134 "Tenant Application Card"
                 StatusStyleTxt := 'Standard'; // default style
         end;
     end;
-    // local procedure SetEditableState()
-    // begin
-    //     // ✅ Lock fields when record is pending approval or approved
-    //     case Rec."Tenant Application Status" of
-    //         Rec."Tenant Application Status"::"PendingApproval",
-    //         Rec."Tenant Application Status"::Approved:
-    //             IsEditable := false;
-    //         else
-    //             IsEditable := true;
-    //     end;
-    // end;
 
     local procedure RefreshTenantApplication()
     begin
@@ -319,100 +261,3 @@ page 50134 "Tenant Application Card"
 
 
 }
-// page 50134 "Tenant Application Card"
-// {
-//     PageType = Card;
-//     ApplicationArea = All;
-//     UsageCategory = Administration;
-//     SourceTable = "Tenant Application";
-
-//     layout
-//     {
-//         area(Content)
-//         {
-//             group("Applicant Details")
-//             {
-//                 Editable = IsEditable; // ✅ Controls editability of this group
-
-//                 field("Application ID"; Rec."Application ID")
-//                 {
-//                     ApplicationArea = All;
-//                 }
-//                 field("Tenant Name"; Rec."Tenant Name")
-//                 {
-//                     ApplicationArea = All;
-//                 }
-//                 field("Date of Birth"; Rec."Date of Birth")
-//                 {
-//                     ApplicationArea = All;
-//                 }
-//                 field("National ID/Passport"; Rec."National ID/Passport")
-//                 {
-//                     ApplicationArea = All;
-//                 }
-//                 field("Company Registration No."; Rec."Company Registration No.")
-//                 {
-//                     ApplicationArea = All;
-//                 }
-//                 field("Tenant Category"; Rec."Tenant Category")
-//                 {
-//                     ApplicationArea = All;
-//                 }
-//                 field("Tenant Type"; Rec."Tenant Type")
-//                 {
-//                     ApplicationArea = All;
-//                 }
-//                 field("Tenant Application Status"; Rec."Tenant Application Status")
-//                 {
-//                     ApplicationArea = All;
-//                     Editable = false;
-//                     StyleExpr = StatusStyleTxt;
-//                 }
-//             }
-//         }
-//     }
-
-//     actions
-//     {
-//         // (Keep your actions unchanged)
-//     }
-
-//     var
-//         ApprovalsMgmt: Codeunit "Approvals Mgmt.";
-//         OpenApprovalEntriesExistCurrUser: Boolean;
-//         StatusStyleTxt: Text;
-//         IsEditable: Boolean; // Added variable
-
-//     trigger OnAfterGetCurrRecord()
-//     begin
-//         //  Control editability dynamically
-//         SetEditableState();
-
-//         // Update approval visibility
-//         OpenApprovalEntriesExistCurrUser := ApprovalsMgmt.HasOpenApprovalEntriesForCurrentUser(Rec.RecordId);
-
-//         // Style the status text
-//         case Rec."Tenant Application Status" of
-//             Rec."Tenant Application Status"::Approved:
-//                 StatusStyleTxt := 'Favorable';
-//             Rec."Tenant Application Status"::Rejected:
-//                 StatusStyleTxt := 'Unfavorable';
-//             Rec."Tenant Application Status"::"PendingApproval":
-//                 StatusStyleTxt := 'Strong';
-//             else
-//                 StatusStyleTxt := 'Standard';
-//         end;
-//     end;
-
-//     local procedure SetEditableState()
-//     begin
-//         // ✅ Lock fields when record is pending approval or approved
-//         case Rec."Tenant Application Status" of
-//             Rec."Tenant Application Status"::"PendingApproval",
-//             Rec."Tenant Application Status"::Approved:
-//                 IsEditable := false;
-//             else
-//                 IsEditable := true;
-//         end;
-//     end;
-// }

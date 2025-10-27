@@ -50,7 +50,7 @@ table 50116 "Lease"
             Caption = 'Rent Amount';
             DataClassification = CustomerContent;
             AutoFormatType = 1;
-            TableRelation = Unit."Rent Amount";
+            //TableRelation = Unit."Rent Amount";
         }
         field(9; "Security Deposit"; Decimal)
         {
@@ -137,10 +137,10 @@ table 50116 "Lease"
         {
             Clustered = true;
         }
-        key(Tenant; "Tenant No.") { }
-        key(Unit; "Unit No.") { }
-        key(Status; "Lease Status") { }
-        key(Dates; "Start Date", "End Date") { }
+        // key(Tenant; "Tenant No.") { }
+        // key(Unit; "Unit No.") { }
+        // key(Status; "Lease Status") { }
+        // key(Dates; "Start Date", "End Date") { }
     }
 
     trigger OnInsert()
@@ -157,32 +157,33 @@ table 50116 "Lease"
 
     end;
 
-    trigger OnModify()
-    begin
-        UpdateDuration();
-    end;
-
     // trigger OnModify()
-    // var unit: Record Unit;
     // begin
-    //     if("Lease Status" = "Lease Status"::Active) then begin
-    //         if unit.Get() then begin
-    //             unit.Validate("Unit Status", unit."Unit Status"::Occupied);
-    //             unit.Modify();
-    //         end;
-    //     end else
-    //     if("Lease Status" = "Lease Status"::Expired) then begin
-    //         if unit.Get() then begin
-    //             unit.Validate("Unit Status",unit."Unit Status"::Vacant);
-
-    //         end;
-    //     end;
-    //     begin
-    //         UpdateDuration();
-
-    //     end;
-
+    //     UpdateDuration();
     // end;
+
+    trigger OnModify()
+    var
+        unit: Record Unit;
+    begin
+        if ("Lease Status" = "Lease Status"::Active) then begin
+            if unit.Get() then begin
+                unit.Validate("Unit Status", unit."Unit Status"::Occupied);
+                unit.Modify();
+            end;
+        end else
+            if ("Lease Status" = "Lease Status"::Expired) then begin
+                if unit.Get() then begin
+                    unit.Validate("Unit Status", unit."Unit Status"::Vacant);
+
+                end;
+            end;
+        begin
+            UpdateDuration();
+
+        end;
+
+    end;
 
     local procedure UpdateDuration()
     begin

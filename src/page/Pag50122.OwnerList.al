@@ -5,6 +5,8 @@ page 50122 "Owner List"
     UsageCategory = Lists;
     SourceTable = Vendor;
     CardPageId = "Owner Card";
+    SourceTableView = where("Property Owner" = const(true));
+
 
     layout
     {

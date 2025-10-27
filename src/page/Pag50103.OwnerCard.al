@@ -155,5 +155,23 @@ page 50103 "Owner Card"
             }
 
         }
+        area(factboxes)
+        {
+
+            part("Attached Documents List"; "Doc. Attachment List Factbox")
+            {
+
+                Visible = true;
+                ApplicationArea = All;
+                Caption = 'Documents';
+                UpdatePropagation = Both;
+                SubPageLink = "Table ID" = const(Database::Vendor),
+                              "No." = field("No.");
+
+
+
+            }
+        }
+
     }
 }

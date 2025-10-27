@@ -1,0 +1,50 @@
+codeunit 50148 "Document Attachment"
+{
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Document Attachment Mgmt", 'OnAfterGetRefTable', '', false, false)]
+    local procedure OnAfterGetNewRefTable(var RecRef: RecordRef; DocumentAttachment: Record "Document Attachment")
+    var
+        PropertyRec: Record Property;
+        UnitRec: Record Unit;
+    begin
+        case DocumentAttachment."Table ID" of
+            Database::Property:
+                begin
+                    RecRef.Open(Database::Property);
+                    if PropertyRec.Get(DocumentAttachment."No.") then
+                        RecRef.GetTable(PropertyRec);
+                end;
+            Database::Unit:
+                begin
+                    RecRef.Open(Database::Unit);
+                    if UnitRec.Get(DocumentAttachment."No.") then
+                        RecRef.GetTable(UnitRec);
+
+                end;
+                
+
+        end;
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Document Attachment", 'OnBeforeInsertAttachment', '', false, false)]
+    local procedure OnBeforeInsertAttachment(var DocumentAttachment: Record "Document Attachment"; var RecRef: RecordRef)
+    var
+        FieldRef: FieldRef;
+    begin
+        case RecRef.Number of
+            DATABASE::Property:
+                begin
+                    FieldRef := RecRef.Field(1);
+                    DocumentAttachment."No." := FieldRef.Value;
+                end;
+            Database::Unit:
+                begin
+                    FieldRef := RecRef.Field(1);
+                    DocumentAttachment."No." := FieldRef.Value;
+                end;
+        end;
+    end;
+
+
+
+}
+

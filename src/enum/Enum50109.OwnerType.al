@@ -5,8 +5,17 @@ enum 50109 "Owner Type"
     value(0; " ")
     {
     }
-    value(1; Individual) { Caption = 'Individual'; }
-    value(2; Corporate) { Caption = 'Corporate'; }
-    value(3; "Joint Ownership") { Caption = 'Joint Ownership'; }
+    value(1; Individual)
+    {
+
+    }
+    value(2; Corporate)
+    {
+
+    }
+    value(3; "Joint Ownership")
+    {
+
+    }
 }
 

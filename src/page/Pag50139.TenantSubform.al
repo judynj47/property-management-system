@@ -57,19 +57,5 @@ page 50140 "Tenant Subform"
 
     }
 
-    actions
-    {
-        area(Processing)
-        {
-            action(ActionName)
-            {
 
-                trigger OnAction()
-                begin
-
-                end;
-
-            }
-        }
-    }
 }
