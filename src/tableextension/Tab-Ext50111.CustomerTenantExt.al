@@ -43,11 +43,31 @@ tableextension 50111 "Customer Tenant Ext" extends Customer
             Caption = 'Emergency Contact Phone';
             DataClassification = CustomerContent;
             ExtendedDatatype = PhoneNo;
+
+            trigger OnValidate()
+            var
+                ch: Text[1];
+                i: Integer;
+            begin
+                for i := 1 to StrLen("Phone No.") do begin
+                    ch := CopyStr("Phone No.", i, 1);
+                    if ((ch >= 'A') and (ch <= 'Z')) or ((ch >= 'a') and (ch <= 'z')) then
+                        FieldError("Phone No.", PhoneNoCannotContainLettersErr);
+                end;
+
+                if (Rec."Phone No." <> xRec."Phone No.") then
+                    SetForceUpdateContact(true);
+
+                UpdateEmergencyPhone(FieldNo("Phone No."));
+            end;
+
         }
         field(50108; "Emergency Contact Relation"; Enum "Emergency Contact Relation")
         {
             Caption = 'Emergency Contact Relation';
             DataClassification = CustomerContent;
+
+
         }
         field(50109; "Move-in Date"; Date)
         {
@@ -133,4 +153,25 @@ tableextension 50111 "Customer Tenant Ext" extends Customer
         end else
             "Tenant Status" := "Tenant Status"::Prospective;
     end;
+
+    var
+        PhoneNoCannotContainLettersErr: Label 'must not contain letters';
+
+    local procedure UpdateEmergencyPhone(CallingFieldNo: Integer)
+    var
+        MyTenant: Record Customer;
+    begin
+        case
+            CallingFieldNo of
+            FieldNo("Emergency Contact Phone"):
+                begin
+                    MyTenant.SetRange("No.", "No.");
+                    if not MyTenant.IsEmpty() then
+                        MyTenant.ModifyAll("Emergency Contact Phone", "Emergency Contact Phone");
+
+                end;
+        end;
+    end;
+
+
 }

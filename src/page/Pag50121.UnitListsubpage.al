@@ -2,8 +2,8 @@ page 50121 "Unit List subpage"
 {
     PageType = ListPart;
     ApplicationArea = All;
-    UsageCategory = Lists;
     SourceTable = "Property Unit";
+    Editable = false;
     //CardPageId = "Unit Card";
 
 
@@ -15,6 +15,7 @@ page 50121 "Unit List subpage"
             {
                 field("No."; Rec."Unit No.")
                 {
+                    Editable = false;
                     trigger OnValidate()
                     var
                         unit: Record Unit;
@@ -61,6 +62,8 @@ page 50121 "Unit List subpage"
         }
 
     }
+    var
+        IsEditable: Boolean;
 
 
 }

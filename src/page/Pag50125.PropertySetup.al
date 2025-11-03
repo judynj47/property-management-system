@@ -31,10 +31,19 @@ page 50125 "Property SetUp"
                 {
                     ToolTip = 'Specifies the value of the Application ID field.', Comment = '%';
                 }
-                field("Customer Nos."; Rec."Customer Nos.")
+                field("Customer Nos"; Rec."Customer Nos")
                 {
-                    ToolTip = 'Specifies the value of the Customer Nos. field.', Comment = '%';
+                    ToolTip = 'Specifies the value of the Customer Nos field.', Comment = '%';
                 }
+                field("Rent Invoice No."; Rec."Rent Invoice No.")
+                {
+                    ToolTip = 'Specifies the value of the Rent Invoice No. field.', Comment = '%';
+                }
+                field("Rent G/L account No."; Rec."Rent G/L account No.")
+                {
+                    ToolTip = 'Specifies the value of the Rent G/L account No. field.', Comment = '%';
+                }
+
                 // field("Clause ID"; Rec."Clause ID")
                 // {
                 //     ToolTip = 'Specifies the value of the Clause ID field.', Comment = '%';

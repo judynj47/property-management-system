@@ -33,12 +33,22 @@ table 50105 "Property Setup"
             TableRelation = "No. Series";
             DataClassification = CustomerContent;
         }
-        field(7; "Customer Nos."; Code[20])
+        field(7; "Customer Nos"; Code[20])
         {
-            Caption = 'Customer Nos.';
-            TableRelation = "No. Series";
             DataClassification = CustomerContent;
+            TableRelation = "No. Series";
         }
+        field(8; "Rent Invoice No."; Code[20])
+        {
+            DataClassification = CustomerContent;
+            TableRelation = "No. Series";
+        }
+        field(9; "Rent G/L account No."; Code[20])
+        {
+            DataClassification = ToBeClassified;
+            TableRelation = "G/L Account";
+        }
+
         // field(8; "Clause ID"; Code[20])
         // {
         //     DataClassification = CustomerContent;

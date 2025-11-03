@@ -27,9 +27,17 @@ page 50127 "Lease Agreement Card"
                 {
                     ToolTip = 'Specifies the value of the Tenant No. field.', Comment = '%';
                 }
+                field("Tenant Name"; Rec."Tenant Name")
+                {
+                    ToolTip = 'Specifies the value of the Tenant Name field.', Comment = '%';
+                }
                 field("Owner No."; Rec."Owner No.")
                 {
                     ToolTip = 'Specifies the value of the Owner No. field.', Comment = '%';
+                }
+                field("Owner Name"; Rec."Owner Name")
+                {
+                    ToolTip = 'Specifies the value of the Owner Name field.', Comment = '%';
                 }
                 group(Fees)
                 {
@@ -44,6 +52,10 @@ page 50127 "Lease Agreement Card"
                     field("Payment Frequency"; Rec."Payment Frequency")
                     {
                         ToolTip = 'Specifies the value of the Payment Frequency field.', Comment = '%';
+                    }
+                    field("Utilities & Service Charges"; Rec."Utilities & Service Charges")
+                    {
+                        ToolTip = 'Specifies the value of the Utilities & Service Charges field.', Comment = '%';
                     }
                 }
 
@@ -65,6 +77,14 @@ page 50127 "Lease Agreement Card"
                     {
                         ToolTip = 'Specifies the value of the Lease Status field.', Comment = '%';
                     }
+                    field("Renewal Notice Period"; Rec."Renewal Notice Period")
+                    {
+                        ToolTip = 'Specifies the value of the Notice Period (Days) field.', Comment = '%';
+                    }
+                    field("Renewal Notice Date"; Rec."Renewal Notice Date")
+                    {
+                        ToolTip = 'Specifies the value of the Renewal Notice Date field.', Comment = '%';
+                    }
                 }
 
             }
@@ -83,9 +103,9 @@ page 50127 "Lease Agreement Card"
         {
             action(PrintLeaseAgreement)
             {
-                Caption = 'Print Lease Agreement';
+                Caption = 'Sign Lease Agreement';
                 ApplicationArea = All;
-                Image = Print;
+                Image = Signature;
                 Promoted = true;
                 PromotedCategory = Process;
 

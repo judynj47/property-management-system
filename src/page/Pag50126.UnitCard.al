@@ -58,7 +58,7 @@ page 50126 "Unit Card"
             part(TenantUnits; "Tenant Subform")
             {
                 ApplicationArea = All;
-                SubPageLink = "No." = FIELD("No.");
+                SubPageLink = "Unit No." = FIELD("No.");
             }
 
         }
@@ -80,5 +80,6 @@ page 50126 "Unit Card"
             }
         }
     }
+
 
 }

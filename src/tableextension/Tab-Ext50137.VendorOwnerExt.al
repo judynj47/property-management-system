@@ -10,10 +10,10 @@ tableextension 50137 "Owner Ext" extends Vendor
         {
             Caption = 'Ownership Share (%)';
         }
-        field(50102; "Property Linked"; Code[20])
-        {
-            TableRelation = Property;
-        }
+        // field(50102; "Property Linked"; Code[20])
+        // {
+        //     TableRelation = Property;
+        // }
         field(50103; "Ownership Type"; Enum "Ownership Type")
         {
             Caption = 'Ownership Type';

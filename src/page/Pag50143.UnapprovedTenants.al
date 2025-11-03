@@ -6,6 +6,7 @@ page 50144 "Pending Tenants List"
     Caption = 'Pending Tenants';
     UsageCategory = Lists;
     SourceTableView = where("Tenant Application Status" = const(PendingApproval));
+    CardPageId = "Tenant Application Card";
 
     layout
     {

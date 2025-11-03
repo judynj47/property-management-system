@@ -130,10 +130,10 @@ page 50103 "Owner Card"
                     ToolTip = 'Specifies the value of the Bank Account No. field.', Comment = '%';
                 }
 
-                field("Property Linked"; Rec."Property Linked")
-                {
-                    ToolTip = 'Specifies the property linked to this owner.';
-                }
+                // field("Property Linked"; Rec."Property Linked")
+                // {
+                //     ToolTip = 'Specifies the property linked to this owner.';
+                // }
                 field("Till No."; Rec."Till No.")
                 {
                     ToolTip = 'Specifies the value of the Till No. field.', Comment = '%';
@@ -151,6 +151,13 @@ page 50103 "Owner Card"
                 {
                     ToolTip = 'Specifies the value of the Mobile Money Account field.', Comment = '%';
                 }
+
+            }
+            part("Properties Owned"; "Property Owner Subform")
+            {
+                Visible = true;
+                ApplicationArea = All;
+                SubPageLink = "Owner No." = field("No.");
 
             }
 
@@ -171,7 +178,9 @@ page 50103 "Owner Card"
 
 
             }
+
         }
+
 
     }
 }

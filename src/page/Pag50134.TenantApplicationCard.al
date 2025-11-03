@@ -13,49 +13,79 @@ page 50134 "Tenant Application Card"
             {
                 field("Application ID"; Rec."Application ID")
                 {
+                    Editable = IsEditable;
                     ApplicationArea = All;
-                    ToolTip = 'Specifies the value of the Application ID field.', Comment = '%';
+                    ToolTip = 'Specifies the value of the Application ID field.';
                 }
                 field("Tenant Name"; Rec."Tenant Name")
                 {
+                    Editable = IsEditable;
                     ApplicationArea = All;
-                    ToolTip = 'Specifies the value of the Tenant Name field.', Comment = '%';
-                }
-                field("Date of Birth"; Rec."Date of Birth")
-                {
-                    ApplicationArea = All;
-                    ToolTip = 'Specifies the value of the Date of Birth field.', Comment = '%';
-                }
-                field("National ID/Passport"; Rec."National ID/Passport")
-                {
-                    ApplicationArea = All;
-                    ToolTip = 'Specifies the value of the National ID/Passport field.', Comment = '%';
-                }
-                field("Company Registration No."; Rec."Company Registration No.")
-                {
-                    ApplicationArea = All;
-                    ToolTip = 'Specifies the value of the Company Registration No. field.', Comment = '%';
-                }
-                field("Tenant Category"; Rec."Tenant Category")
-                {
-                    ApplicationArea = All;
-                    ToolTip = 'Specifies the value of the Tenant Category field.', Comment = '%';
+                    ToolTip = 'Specifies the value of the Tenant Name field.';
                 }
                 field("Tenant Type"; Rec."Tenant Type")
                 {
+                    Editable = IsEditable;
                     ApplicationArea = All;
-                    ToolTip = 'Specifies the value of the Tenant Type field.', Comment = '%';
+                    ToolTip = 'Specifies the value of the Tenant Type field.';
+
+                    trigger OnValidate()
+                    begin
+                        // Update visibility immediately when tenant type changes
+                        ShowCompanyNumber := (Rec."Tenant Type" = Rec."Tenant Type"::Corporate);
+                        CurrPage.Update();
+                    end;
                 }
-                // field("Tenant Status"; Rec."Tenant Status")
-                // {
-                //     ToolTip = 'Specifies the value of the Tenant Status field.', Comment = '%';
-                // }
+
+                field("Tenant Category"; Rec."Tenant Category")
+                {
+                    Editable = IsEditable;
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies the value of the Tenant Category field.';
+                }
+
+                field("National ID/Passport"; Rec."National ID/Passport")
+                {
+                    ShowMandatory = true;
+                    Editable = IsEditable;
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies the value of the National ID/Passport field.';
+                }
+
+                field("Company Registration No."; Rec."Company Registration No.")
+                {
+                    ApplicationArea = All;
+                    Editable = IsEditable;
+                    Visible = ShowCompanyNumber;
+                    ShowMandatory = ShowCompanyNumber;
+                    ToolTip = 'Specifies the value of the Company Registration No. field.';
+                }
+
+                field("Date of Birth"; Rec."Date of Birth")
+                {
+                    Editable = IsEditable;
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies the value of the Date of Birth field.';
+                }
+
+                field("Unit No."; Rec."Unit No.")
+                {
+                    ToolTip = 'Specifies the value of the Unit No. field.';
+                    Caption = 'Unit applying for';
+                    Editable = IsEditable;
+                }
+
                 field("Tenant Application Status"; Rec."Tenant Application Status")
                 {
                     StyleExpr = StatusStyleTxt;
                     ApplicationArea = All;
                     Editable = false;
-                    ToolTip = 'Specifies the value of the Tenant Application Status field.', Comment = '%';
+                    ToolTip = 'Specifies the value of the Tenant Application Status field.';
+                }
+                field("Customer Created"; Rec."Customer Created")
+                {
+                    StyleExpr = StatusStyleTxt;
+                    ApplicationArea = All;
                 }
             }
         }
@@ -71,38 +101,31 @@ page 50134 "Tenant Application Card"
                 ApplicationArea = Basic, Suite;
                 Promoted = true;
                 PromotedCategory = Process;
-
+                Visible = ShowSendApproval;
 
                 trigger OnAction()
                 var
                     CustomWorkflowMgmt: Codeunit "Tenant Workflow Mgmt";
                     RecRef: RecordRef;
-                    //EmailCU: Codeunit Email;
-                    ApprovalEntry: Record "Approval Entry";
-                    UserSetup: Record "User Setup";
-                    ApproverEmail: Text;
                 begin
+                    // Validate required fields before sending for approval
+                    Rec.ValidateId(Rec."Application ID");
+
+                    // Check if Company Registration No. is required and filled
+                    if Rec."Tenant Type" = Rec."Tenant Type"::Corporate then
+                        Rec.TestField("Company Registration No.");
+
+                    // Validate other mandatory fields
+                    Rec.TestField("Tenant Name");
+                    // Rec.TestField("National ID/Passport");
+                    // Rec.TestField("Unit No.");
+
                     RecRef.GetTable(Rec);
-                    if CustomWorkflowMgmt.CheckApprovalsWorkflowEnabled(RecRef) then begin
+                    if CustomWorkflowMgmt.CheckApprovalsWorkflowEnabled(RecRef) then
                         CustomWorkflowMgmt.OnSendWorkflowForApproval(RecRef);
-
-                        // Find approver for this record
-                        ApprovalEntry.SetRange("Record ID to Approve", Rec.RecordId);
-                        if ApprovalEntry.FindFirst() then begin
-                            if UserSetup.Get(ApprovalEntry."Approver ID") then
-                                ApproverEmail := UserSetup."E-Mail"; // use email field from User Setup
-                        end;
-
-
-                        // // Send email to approver
-                        // if ApproverEmail <> '' then
-                        //     EmailCU.SendAnEmail(ApproverEmail)
-                        // else
-                        //     Message('No approver email found for user %1', ApprovalEntry."Approver ID");
-
-                    end;
                 end;
             }
+
             action(CancelApprovalRequest)
             {
                 ApplicationArea = Basic, Suite;
@@ -110,16 +133,25 @@ page 50134 "Tenant Application Card"
                 Image = CancelApprovalRequest;
                 Promoted = true;
                 PromotedCategory = Process;
+                Visible = ShowCancelApproval;
 
                 trigger OnAction()
                 var
-                    CustomWorkflowMgmt: Codeunit "Tenant Workflow Mgmt";
                     RecRef: RecordRef;
+                    WorkflowStepInstance: Record "Workflow Step Instance";
+                    ApprovalsMgmt: Codeunit "Approvals Mgmt.";
                 begin
                     RecRef.GetTable(Rec);
-                    CustomWorkflowMgmt.OnCancelWorkflowForApproval(RecRef);
+                    ApprovalsMgmt.CancelApprovalRequestsForRecord(RecRef, WorkflowStepInstance);
+
+                    //Set status to Open
+                    Rec.Validate("Tenant Application Status", Rec."Tenant Application Status"::Open);
+                    Rec.Modify(true);
+
+                    Message('Approval request for Tenant Application %1 has been canceled.', Rec."Application ID");
                 end;
             }
+
         }
         area(Creation)
         {
@@ -137,15 +169,9 @@ page 50134 "Tenant Application Card"
 
                     trigger OnAction()
                     begin
-                        // Approve the current record
                         ApprovalsMgmt.ApproveRecordApprovalRequest(Rec.RecordId);
-
-                        // Re-read the record from database to get latest status
-                        if Rec.Get(Rec.RecordId) then begin
-                            CurrPage.Update();
-                            Message('Tenant Application %1 has been approved.', Rec."Application ID");
-                        end else
-                            CurrPage.Update(); // still refresh if record not found
+                        CurrPage.Update();
+                        Message('Tenant Application %1 has been approved.', Rec."Application ID");
                     end;
                 }
 
@@ -160,18 +186,11 @@ page 50134 "Tenant Application Card"
 
                     trigger OnAction()
                     begin
-                        // Reject the current record
                         ApprovalsMgmt.RejectRecordApprovalRequest(Rec.RecordId);
-
-                        // Re-read the record from database to reflect new status
-                        if Rec.Get(Rec.RecordId) then begin
-                            CurrPage.Update();
-                            Message('Tenant Application %1 has been rejected.', Rec."Application ID");
-                        end else
-                            CurrPage.Update();
+                        CurrPage.Update();
+                        Message('Tenant Application %1 has been rejected.', Rec."Application ID");
                     end;
                 }
-
 
                 action(Delegate)
                 {
@@ -184,15 +203,9 @@ page 50134 "Tenant Application Card"
 
                     trigger OnAction()
                     begin
-                        // Delegate the current record
                         ApprovalsMgmt.DelegateRecordApprovalRequest(Rec.RecordId);
-
-                        // Re-read and refresh UI after delegation
-                        if Rec.Get(Rec.RecordId) then begin
-                            CurrPage.Update();
-                            Message('Approval request for Tenant Application %1 has been delegated.', Rec."Application ID");
-                        end else
-                            CurrPage.Update();
+                        CurrPage.Update();
+                        Message('Approval request for Tenant Application %1 has been delegated.', Rec."Application ID");
                     end;
                 }
 
@@ -228,36 +241,58 @@ page 50134 "Tenant Application Card"
         }
     }
 
-
     var
         ApprovalsMgmt: Codeunit "Approvals Mgmt.";
         OpenApprovalEntriesExistCurrUser: Boolean;
         StatusStyleTxt: Text;
+        IsEditable: Boolean;
+        ShowSendApproval: Boolean;
+        ShowCancelApproval: Boolean;
+        ShowCompanyNumber: Boolean;
+
+    trigger OnOpenPage()
+    begin
+        // Initialize visibility when page opens
+        ShowCompanyNumber := (Rec."Tenant Type" = Rec."Tenant Type"::Corporate);
+    end;
 
     trigger OnAfterGetCurrRecord()
     begin
-        // Update visibility flag based on current user’s approval entries
+        // Update visibility based on current record
+        ShowCompanyNumber := (Rec."Tenant Type" = Rec."Tenant Type"::Corporate);
+
+        //if there are open approvals for current user
         OpenApprovalEntriesExistCurrUser := ApprovalsMgmt.HasOpenApprovalEntriesForCurrentUser(Rec.RecordId);
 
-        // Set style based on Status
+        //Default visibility for approval actions
+        ShowSendApproval := false;
+        ShowCancelApproval := false;
+
         case Rec."Tenant Application Status" of
             Rec."Tenant Application Status"::Approved:
-                StatusStyleTxt := 'Favorable'; // green
+                begin
+                    IsEditable := false;
+                    StatusStyleTxt := 'Favorable';
+                end;
+
             Rec."Tenant Application Status"::Rejected:
-                StatusStyleTxt := 'Unfavorable'; // red
+                begin
+                    IsEditable := false;
+                    StatusStyleTxt := 'Unfavorable';
+                end;
+
             Rec."Tenant Application Status"::"PendingApproval":
-                StatusStyleTxt := 'Strong'; // bold black
-            else
-                StatusStyleTxt := 'Standard'; // default style
+                begin
+                    IsEditable := false;
+                    StatusStyleTxt := 'Strong';
+                    ShowCancelApproval := true;
+                end;
+
+            else begin
+                IsEditable := true;
+                StatusStyleTxt := 'Standard';
+                ShowSendApproval := true;
+            end;
         end;
     end;
-
-    local procedure RefreshTenantApplication()
-    begin
-        if Rec.Get(Rec.RecordId) then;
-        CurrPage.Update();
-    end;
-
-
-
 }

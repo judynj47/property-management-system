@@ -122,6 +122,26 @@ table 50101 "Property"
         {
             DataClassification = ToBeClassified;
             TableRelation = Vendor where("No." = field("Owner No."));
+
+            trigger OnValidate()
+            var
+                PropertyOwnerRec: Record "Property Owner";
+            begin
+                if ("Property ID" <> '') and ("Owner No." <> '') then begin
+                    PropertyOwnerRec.Reset();
+                    PropertyOwnerRec.SetRange("Owner No.", "Owner No.");
+                    PropertyOwnerRec.SetRange("Property No.", "Property ID");
+                    if not PropertyOwnerRec.FindFirst() then begin
+                        PropertyOwnerRec.Init();
+                        PropertyOwnerRec."Owner No." := "Owner No.";
+                        PropertyOwnerRec."Property No." := "Property ID";
+                        PropertyOwnerRec.Description := "Property Name";
+                        PropertyOwnerRec.Insert(true);
+                    end;
+                end;
+            end;
+
+
         }
         field(14; "Ownership Type"; Enum "Ownership Type")
         {
@@ -148,17 +168,9 @@ table 50101 "Property"
         field(18; "Total Units"; Integer)
         {
             Caption = 'Total Units';
-            DataClassification = CustomerContent;
+            FieldClass = Flowfield;
+            CalcFormula = count("Property Unit" where("Property No." = FIELD("Property ID")));
             Editable = false;
-
-            trigger OnValidate()
-            var
-                UnitNosRec: Record Unit;
-            begin
-                UnitNosRec.Reset();
-                UnitNosRec.SetRange("Property No.", Rec."Property ID");
-                Rec."Total Units" := UnitNosRec.Count;
-            end;
         }
         field(19; "Occupied Units"; Integer)
         {
@@ -171,9 +183,9 @@ table 50101 "Property"
         field(20; "Vacancy Rate"; Decimal)
         {
             Caption = 'Vacancy Rate %';
-            DataClassification = CustomerContent;
             Editable = false;
             DecimalPlaces = 1 : 1;
+
         }
         field(21; "Blocked"; Boolean)
         {
@@ -282,8 +294,22 @@ table 50101 "Property"
     begin
     end;
 
+    local procedure UpdateVacancyRate()
+    begin
+        if "Total Units" > 0 then
+            "Vacancy Rate" := ("Total Units" - "Occupied Units") / "Total Units" * 100
+        else
+            "Vacancy Rate" := 0;
+    end;
+
     var
         PostCode: Record "Post Code";
+
+    trigger OnModify()
+    begin
+        UpdateVacancyRate();
+    end;
+
 
 
 

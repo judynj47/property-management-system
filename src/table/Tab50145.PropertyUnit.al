@@ -98,7 +98,7 @@ table 50145 "Property Unit"
 
     end;
 
-    //check dictionaries 
+    //check dictionaries for avoiding duplicates
     procedure ValidateUnitNo(PropertyNo: Code[20])
     var
         PropertyUnit: Record "Property Unit";

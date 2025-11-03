@@ -102,22 +102,44 @@ codeunit 50134 "Tenant Workflow Mgmt"
     local procedure OnApproveApprovalRequest(var ApprovalEntry: Record "Approval Entry")
     var
         TenantApplication: Record "Tenant Application";
+        CustomerRec: Record Customer;
     //EmailMgmt: Codeunit "Email Management";
     begin
         if ApprovalEntry."Table ID" = Database::"Tenant Application" then begin
             if TenantApplication.Get(ApprovalEntry."Document No.") then begin
 
+                //Create Customer:
+                CreateTenantCustumer(TenantApplication."Application ID");
                 TenantApplication.Validate("Tenant Application Status", TenantApplication."Tenant Application Status"::Approved);
+                TenantApplication."Customer Created" := true;
                 TenantApplication.Modify(true);
-
-
-
                 //EmailMgmt.SendApplicationStatusEmail(TenantApplication, true); // true = approved
 
                 //Message('"Tenant Application %1 has been approved. Notification email sent.', TenantApplication."A");
             end;
         end;
     end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Approvals Mgmt.", OnCancelApprovalRequestsForRecordOnAfterCreateApprovalEntryNotification, '', true, true)]
+    local procedure OnCancelApprovalRequest(var ApprovalEntry: Record "Approval Entry")
+    var
+        TenantApplication: Record "Tenant Application";
+        CustomerRec: Record Customer;
+    begin
+        if ApprovalEntry."Table ID" = Database::"Tenant Application" then begin
+            if TenantApplication.Get(ApprovalEntry."Document No.") then begin
+
+                TenantApplication.Validate("Tenant Application Status", TenantApplication."Tenant Application Status"::Open);
+                TenantApplication.Modify(true);
+                //EmailMgmt.SendApplicationStatusEmail(TenantApplication, true); // true = approved
+
+                //Message('"Tenant Application %1 has been approved. Notification email sent.', TenantApplication."A");
+            end;
+        end;
+
+
+    end;
+
 
 
 
@@ -173,11 +195,49 @@ codeunit 50134 "Tenant Workflow Mgmt"
         end;
     end;
 
+    //     [EventSubscriber(ObjectType::Table, Database:: "Tenant Application", OnAfterInsertEvent, '', false, false)]
+    // local procedure ValidateId(var Rec: Record "Tenant Application"; RunTrigger: Boolean)
+    // begin
+    //      idRec.TestField("National ID/Passport");
+
+    // end;
+
+
+    //Automatic Creation of Customers from Tenants: 31.11.25:
+    local procedure CreateTenantCustumer(TenantID: Code[20])
+    var
+        CustomerRec: Record Customer;
+        TenantApplication: Record "Tenant Application";
+        PropertySetup: Record "Property Setup";
+        NoseriesMgt: Codeunit "No. Series";
+    begin
+        if TenantApplication.Get(TenantID) then begin
+            PropertySetup.Get();
+            PropertySetup.TestField("Customer Nos");
+            CustomerRec.Init();
+            //CustomerRec."No." := TenantApplication."Application ID";
+            CustomerRec."No." := NoseriesMgt.GetNextNo(PropertySetup."Customer Nos");
+            CustomerRec.Name := TenantApplication."Tenant Name";
+            CustomerRec."National ID/Passport" := TenantApplication."National ID/Passport";
+            CustomerRec."Tenant Type" := TenantApplication."Tenant Type";
+            CustomerRec."Tenant Category" := TenantApplication."Tenant Category";
+            CustomerRec."Tenant Status" := CustomerRec."Tenant Status"::Active;
+            CustomerRec."Date of Birth" := TenantApplication."Date of Birth";
+            CustomerRec."Company Registration No." := TenantApplication."Company Registration No.";
+            CustomerRec."Gen. Bus. Posting Group" := 'TENANT';
+            CustomerRec."VAT Bus. Posting Group" := 'TENANT';
+            CustomerRec."Customer Posting Group" := 'TENANT';
+
+            CustomerRec.Insert(true);
+            Message('Customer No %1 created successfully!', CustomerRec."No.");
+        end;
+    end;
 
 
     var
 
         WorkflowMgt: Codeunit "Workflow Management";
+        //idRec: Record "Tenant Application";
 
         RUNWORKFLOWONSENDFORAPPROVALCODE: Label 'RUNWORKFLOWONSEND%1FORAPPROVAL';
         RUNWORKFLOWONCANCELFORAPPROVALCODE: Label 'RUNWORKFLOWONCANCEL%1FORAPPROVAL';

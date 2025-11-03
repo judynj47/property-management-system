@@ -6,6 +6,7 @@ page 50142 "Approved Tenants List"
     Caption = 'Approved Tenants';
     UsageCategory = Lists;
     SourceTableView = where("Tenant Application Status" = const(Approved));
+    CardPageId = "Tenant Application Card";
 
     layout
     {
@@ -13,11 +14,26 @@ page 50142 "Approved Tenants List"
         {
             repeater(Group)
             {
-                field("Application ID"; Rec."Application ID") { ApplicationArea = All; }
-                field("Tenant Name"; Rec."Tenant Name") { ApplicationArea = All; }
-                field("Tenant Type"; Rec."Tenant Type") { ApplicationArea = All; }
-                field("National ID/Passport"; Rec."National ID/Passport") { ApplicationArea = All; }
-                field("Tenant Category"; Rec."Tenant Category") { ApplicationArea = All; }
+                field("Application ID"; Rec."Application ID")
+                {
+                    ApplicationArea = All;
+                }
+                field("Tenant Name"; Rec."Tenant Name")
+                {
+                    ApplicationArea = All;
+                }
+                field("Tenant Type"; Rec."Tenant Type")
+                {
+                    ApplicationArea = All;
+                }
+                field("National ID/Passport"; Rec."National ID/Passport")
+                {
+                    ApplicationArea = All;
+                }
+                field("Tenant Category"; Rec."Tenant Category")
+                {
+                    ApplicationArea = All;
+                }
                 field("Tenant Application Status"; Rec."Tenant Application Status")
                 {
                     ApplicationArea = All;

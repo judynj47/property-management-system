@@ -92,18 +92,17 @@ page 50124 "Property Management RoleCenter"
                         RunObject = page "Tenant Application List";
                     }
 
-                    action("Approved Tenants")
-                    {
-                        ApplicationArea = All;
-                        Caption = 'Approved Tenants';
-                        RunObject = page "Approved Tenants List";
-                    }
-
                     action("Pending Tenants")
                     {
                         ApplicationArea = All;
                         Caption = 'Pending Tenants';
                         RunObject = page "Pending Tenants List";
+                    }
+                    action("Approved Tenants")
+                    {
+                        ApplicationArea = All;
+                        Caption = 'Approved Tenants';
+                        RunObject = page "Approved Tenants List";
                     }
                 }
 
@@ -119,8 +118,14 @@ page 50124 "Property Management RoleCenter"
 
 
 
-            group("Tenants & Leases")
+            group("Leases & Tenants")
             {
+                action(Leases)
+                {
+                    ApplicationArea = All;
+                    Caption = 'Leases';
+                    RunObject = page "Lease List";
+                }
 
                 action(Tenants)
                 {
@@ -128,12 +133,12 @@ page 50124 "Property Management RoleCenter"
                     Caption = 'Tenants';
                     RunObject = page "Tenant List";
                 }
-                action(Leases)
+                action(Receipts)
                 {
                     ApplicationArea = All;
-                    Caption = 'Leases';
-                    RunObject = page "Lease List";
+                    RunObject = page "Rent Invoice List";
                 }
+
 
             }
         }

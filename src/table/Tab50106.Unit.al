@@ -17,7 +17,43 @@ table 50106 Unit
             Caption = 'Property No.';
             DataClassification = CustomerContent;
             TableRelation = Property;
+
+            trigger OnValidate()
+            var
+                PropertyUnit: Record "Property Unit";
+                IsInserted: Boolean;
+
+            begin
+                // Delete old link if Property No. was changed
+                if xRec."Property No." <> '' then begin
+                    PropertyUnit.Reset();
+                    PropertyUnit.SetRange("Unit No.", Rec."No.");
+                    PropertyUnit.DeleteAll();
+                end;
+
+                // Insert new Property Unit record when Property No. is entered
+                if "Property No." <> '' then begin
+                    PropertyUnit.Init();
+                    PropertyUnit."Property No." := "Property No.";
+                    PropertyUnit."Unit No." := "No.";
+                    PropertyUnit.Description := Description;
+                    PropertyUnit."Unit Size" := "Unit Size";
+                    PropertyUnit."Unit Status" := "Unit Status";
+                    PropertyUnit."Date Available" := "Date Available";
+                    PropertyUnit."Rent Amount" := "Rent Amount";
+                    PropertyUnit.Insert(true);
+                end;
+
+
+            end;
         }
+
+        // field(2; "Property No."; Code[20])
+        // {
+        //     Caption = 'Property No.';
+        //     DataClassification = CustomerContent;
+        //     TableRelation = Property;
+        // }
         field(3; Description; Text[100])
         {
             Caption = 'Description';
@@ -33,18 +69,41 @@ table 50106 Unit
         {
             Caption = 'Unit Status';
             DataClassification = CustomerContent;
+            Editable = false;
+
         }
         field(6; "Rent Amount"; Decimal)
         {
             Caption = 'Rent Amount';
             DataClassification = CustomerContent;
             AutoFormatType = 1;
+
         }
         field(8; "Lease No."; Code[20])
         {
+            Editable = false;
             Caption = 'Lease No.';
             DataClassification = CustomerContent;
             TableRelation = Lease;
+            trigger OnValidate()
+            var
+                LeaseRec: Record Lease;
+                IsInserted: Boolean;
+            begin
+                if xRec."No." <> '' then begin
+                    LeaseRec.Reset();
+                    LeaseRec.SetRange("No.", Rec."Lease No.");
+                    LeaseRec.DeleteAll();
+                end;
+                if "No." <> '' then begin
+                    LeaseRec.Init();
+                    LeaseRec."No." := "Lease No.";
+                    LeaseRec."Rent Amount" := "Rent Amount";
+                    LeaseRec.Insert(true);
+                end;
+
+            end;
+
         }
         field(9; "Date Available"; Date)
         {

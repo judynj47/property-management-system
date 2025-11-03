@@ -4,6 +4,7 @@ page 50139 "Tenant List"
     ApplicationArea = All;
     UsageCategory = Lists;
     SourceTable = Customer;
+    SourceTableView = where("Tenant Category" = filter('Commercial|Residential'));
     CardPageId = "Customer Card";
 
     layout

@@ -5,6 +5,8 @@ page 50136 "Tenant Application List"
     UsageCategory = Lists;
     SourceTable = "Tenant Application";
     CardPageId = "Tenant Application Card";
+    Caption = 'Open Tenant Applications';
+    //SourceTableView = where("Tenant Application Status" = filter("Tenant Application Status"::Open));
 
 
 
@@ -22,7 +24,7 @@ page 50136 "Tenant Application List"
                 {
                     ToolTip = 'Specifies the value of the Tenant Name field.', Comment = '%';
                 }
-                
+
                 field("National ID/Passport"; Rec."National ID/Passport")
                 {
                     ToolTip = 'Specifies the value of the National ID/Passport field.', Comment = '%';

@@ -16,13 +16,9 @@ page 50123 "Lease List"
                 {
                     ToolTip = 'Specifies the value of the Lease No. field.', Comment = '%';
                 }
-                field("Property No."; Rec."Property No.")
+                field("Unit No."; Rec."Unit No.")
                 {
-                    ToolTip = 'Specifies the value of the Property No. field.', Comment = '%';
-                }
-                field("Created Date"; Rec."Created Date")
-                {
-                    ToolTip = 'Specifies the value of the Created Date field.', Comment = '%';
+                    ToolTip = 'Specifies the value of the Unit No. field.', Comment = '%';
                 }
                 field("End Date"; Rec."End Date")
                 {
