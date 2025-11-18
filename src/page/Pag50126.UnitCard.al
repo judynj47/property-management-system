@@ -48,7 +48,12 @@ page 50126 "Unit Card"
                 {
                     ToolTip = 'Specifies the value of the Rent Amount field.', Comment = '%';
                 }
+                field("Penalty Charge"; Rec."Penalty Charge")
+                {
+                    ToolTip = 'Specifies the value of the Penalty Charge field.', Comment = '%';
+                }
             }
+
             // part(TenantUnit; "Tenant Subform")
             // {
             //     SubPageLink = "Unit No." = field("No.");
@@ -61,7 +66,10 @@ page 50126 "Unit Card"
                 SubPageLink = "Unit No." = FIELD("No.");
             }
 
+
+
         }
+
         area(factboxes)
         {
 
@@ -78,8 +86,45 @@ page 50126 "Unit Card"
 
 
             }
+            systempart(Control1900383207; Links)
+            {
+                ApplicationArea = RecordLinks;
+            }
+            systempart(Control1905767507; Notes)
+            {
+                ApplicationArea = Notes;
+            }
+        }
+
+    }
+    actions
+    {
+        area(Processing)
+        {
+            action(CreateMaintenanceRequest)
+            {
+                Caption = 'Create Maintenance Request';
+                ApplicationArea = All;
+                Image = MaintenanceRegistrations;
+
+                trigger OnAction()
+                var
+                    MaintenanceRequest: Record "Maintenance Request";
+                    MaintenanceCard: Page "Maintenance Request Card";
+                begin
+                    MaintenanceRequest.Init();
+                    MaintenanceRequest."Unit No." := Rec."No.";
+                    MaintenanceRequest.Insert(true);
+
+                    MaintenanceCard.SetRecord(MaintenanceRequest);
+                    MaintenanceCard.Run();
+                end;
+            }
         }
     }
+
+
+
 
 
 }

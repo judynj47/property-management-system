@@ -88,19 +88,20 @@ tableextension 50111 "Customer Tenant Ext" extends Customer
         {
             Caption = 'Current Unit No.';
             DataClassification = CustomerContent;
-            TableRelation = Unit;
+            //TableRelation = Unit;
         }
         field(50113; "Current Property No."; Code[20])
         {
             Caption = 'Current Property No.';
             DataClassification = CustomerContent;
-            TableRelation = Property;
+
+            //TableRelation = Property;
         }
         field(50114; "Current Lease No."; Code[20])
         {
             Caption = 'Current Lease No.';
             DataClassification = CustomerContent;
-            TableRelation = Lease;
+            //TableRelation = Lease;
         }
         field(50115; "Security Deposit Amount"; Decimal)
         {
@@ -116,7 +117,7 @@ tableextension 50111 "Customer Tenant Ext" extends Customer
         field(50117; "Unit No."; Code[20])
         {
             DataClassification = CustomerContent;
-            TableRelation = Unit;
+            //TableRelation = Unit;
         }
         field(50118; Tenant; Boolean)
         {
@@ -125,6 +126,11 @@ tableextension 50111 "Customer Tenant Ext" extends Customer
         field(50119; "Rent Amount"; Decimal)
         {
             DataClassification = CustomerContent;
+        }
+        field(50120; "Total Active Tenants"; Integer)
+        {
+            FieldClass = FlowField;
+            CalcFormula = count(Customer where("Tenant Status" = filter('Active')));
         }
 
 

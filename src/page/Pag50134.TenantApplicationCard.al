@@ -31,11 +31,20 @@ page 50134 "Tenant Application Card"
 
                     trigger OnValidate()
                     begin
-                        // Update visibility immediately when tenant type changes
-                        ShowCompanyNumber := (Rec."Tenant Type" = Rec."Tenant Type"::Corporate);
-                        CurrPage.Update();
+                        // Clear Company Registration No. when switching away from Corporate
+                        if (xRec."Tenant Type" = xRec."Tenant Type"::Corporate) and
+                           (Rec."Tenant Type" <> Rec."Tenant Type"::Corporate) then
+                            Rec."Company Registration No." := '';
+
+                        if (xRec."Tenant Type" = xRec."Tenant Type"::Individual) and
+                           (Rec."Tenant Type" <> Rec."Tenant Type"::Individual) then
+                            Rec."National ID/Passport" := '';
+
+
+
                     end;
                 }
+
 
                 field("Tenant Category"; Rec."Tenant Category")
                 {
@@ -44,28 +53,46 @@ page 50134 "Tenant Application Card"
                     ToolTip = 'Specifies the value of the Tenant Category field.';
                 }
 
-                field("National ID/Passport"; Rec."National ID/Passport")
+
+
+                group("Company Details")
                 {
-                    ShowMandatory = true;
+                    //ApplicationArea = All;
                     Editable = IsEditable;
-                    ApplicationArea = All;
-                    ToolTip = 'Specifies the value of the National ID/Passport field.';
+                    Visible = (Rec."Tenant Type" = Rec."Tenant Type"::Corporate);
+
+                    field("Company Registration No."; Rec."Company Registration No.")
+                    {
+                        ShowMandatory = (Rec."Tenant Type" = Rec."Tenant Type"::Corporate);
+                        ToolTip = 'Specifies the value of the Company Registration No. field.';
+                        Editable = IsEditable;
+                    }
                 }
 
-                field("Company Registration No."; Rec."Company Registration No.")
+                group("Individual Details")
                 {
-                    ApplicationArea = All;
                     Editable = IsEditable;
-                    Visible = ShowCompanyNumber;
-                    ShowMandatory = ShowCompanyNumber;
-                    ToolTip = 'Specifies the value of the Company Registration No. field.';
-                }
+                    Visible = (Rec."Tenant Type" = Rec."Tenant Type"::Individual);
+                    field("Date of Birth"; Rec."Date of Birth")
+                    {
+                        Editable = IsEditable;
+                        ApplicationArea = All;
+                        ToolTip = 'Specifies the value of the Date of Birth field.';
 
-                field("Date of Birth"; Rec."Date of Birth")
+                    }
+                    field("National ID/Passport"; Rec."National ID/Passport")
+                    {
+                        ShowMandatory = true;
+                        Editable = IsEditable;
+                        ApplicationArea = All;
+                        ToolTip = 'Specifies the value of the National ID/Passport field.';
+                    }
+                }
+                field("Property Linked"; Rec."Property Linked")
                 {
+                    ToolTip = 'Specifies the value of the Property Linked field.', Comment = '%';
                     Editable = IsEditable;
-                    ApplicationArea = All;
-                    ToolTip = 'Specifies the value of the Date of Birth field.';
+
                 }
 
                 field("Unit No."; Rec."Unit No.")
@@ -74,6 +101,7 @@ page 50134 "Tenant Application Card"
                     Caption = 'Unit applying for';
                     Editable = IsEditable;
                 }
+
 
                 field("Tenant Application Status"; Rec."Tenant Application Status")
                 {
@@ -115,10 +143,14 @@ page 50134 "Tenant Application Card"
                     if Rec."Tenant Type" = Rec."Tenant Type"::Corporate then
                         Rec.TestField("Company Registration No.");
 
-                    // Validate other mandatory fields
+                    if Rec."Tenant Type" = Rec."Tenant Type"::Individual then
+                        Rec.TestField("National ID/Passport");
+                    Rec.TestField("Date of Birth");
+                    CurrPage.Update();
+
                     Rec.TestField("Tenant Name");
-                    // Rec.TestField("National ID/Passport");
-                    // Rec.TestField("Unit No.");
+                    Rec.TestField("Property Linked");
+                    rec.TestField("Unit No.");
 
                     RecRef.GetTable(Rec);
                     if CustomWorkflowMgmt.CheckApprovalsWorkflowEnabled(RecRef) then
@@ -249,17 +281,24 @@ page 50134 "Tenant Application Card"
         ShowSendApproval: Boolean;
         ShowCancelApproval: Boolean;
         ShowCompanyNumber: Boolean;
+        ShowIndividualDetails: Boolean;
 
     trigger OnOpenPage()
     begin
-        // Initialize visibility when page opens
         ShowCompanyNumber := (Rec."Tenant Type" = Rec."Tenant Type"::Corporate);
+        ShowIndividualDetails := (Rec."Tenant Type" = Rec."Tenant Type"::Individual);
+    end;
+
+
+    trigger OnInsertRecord(BelowxRec: Boolean): Boolean
+    begin
+        ShowCompanyNumber := (Rec."Tenant Type" = Rec."Tenant Type"::Corporate);
+        ShowIndividualDetails := (Rec."Tenant Type" = Rec."Tenant Type"::Individual);
+
     end;
 
     trigger OnAfterGetCurrRecord()
     begin
-        // Update visibility based on current record
-        ShowCompanyNumber := (Rec."Tenant Type" = Rec."Tenant Type"::Corporate);
 
         //if there are open approvals for current user
         OpenApprovalEntriesExistCurrUser := ApprovalsMgmt.HasOpenApprovalEntriesForCurrentUser(Rec.RecordId);
@@ -295,4 +334,5 @@ page 50134 "Tenant Application Card"
             end;
         end;
     end;
+
 }

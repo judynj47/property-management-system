@@ -5,6 +5,7 @@ page 50159 "Rent Invoice List"
     UsageCategory = Lists;
     SourceTable = "Rent Invoice";
     CardPageId = "Rent Invoice Card";
+    SourceTableView = where("Document Type" = const(Invoice));
 
     layout
     {
@@ -28,7 +29,7 @@ page 50159 "Rent Invoice List"
                 {
                     ToolTip = 'Specifies the value of the Tenant Name field.', Comment = '%';
                 }
-                field("Receipt Amount"; Rec."Receipt Amount")
+                field("Invoice Amount"; Rec."Receipt Amount")
                 {
                     ToolTip = 'Specifies the value of the Receipt Amount field.', Comment = '%';
                 }

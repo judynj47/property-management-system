@@ -195,13 +195,6 @@ codeunit 50134 "Tenant Workflow Mgmt"
         end;
     end;
 
-    //     [EventSubscriber(ObjectType::Table, Database:: "Tenant Application", OnAfterInsertEvent, '', false, false)]
-    // local procedure ValidateId(var Rec: Record "Tenant Application"; RunTrigger: Boolean)
-    // begin
-    //      idRec.TestField("National ID/Passport");
-
-    // end;
-
 
     //Automatic Creation of Customers from Tenants: 31.11.25:
     local procedure CreateTenantCustumer(TenantID: Code[20])
@@ -218,6 +211,8 @@ codeunit 50134 "Tenant Workflow Mgmt"
             //CustomerRec."No." := TenantApplication."Application ID";
             CustomerRec."No." := NoseriesMgt.GetNextNo(PropertySetup."Customer Nos");
             CustomerRec.Name := TenantApplication."Tenant Name";
+            CustomerRec."Unit No." := TenantApplication."Unit No.";
+            CustomerRec."Current Property No." := TenantApplication."Property Linked";
             CustomerRec."National ID/Passport" := TenantApplication."National ID/Passport";
             CustomerRec."Tenant Type" := TenantApplication."Tenant Type";
             CustomerRec."Tenant Category" := TenantApplication."Tenant Category";

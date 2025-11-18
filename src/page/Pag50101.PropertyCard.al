@@ -43,7 +43,6 @@ page 50101 "Property Card"
                     ApplicationArea = All;
                     ToolTip = 'Specifies the additional address information.';
                 }
-
                 field("Country/Region Code"; Rec."Country/Region Code")
                 {
                     ToolTip = 'Specifies the value of the Country field.', Comment = '%';
@@ -58,11 +57,6 @@ page 50101 "Property Card"
                     ApplicationArea = All;
                     ToolTip = 'Specifies the post code.';
                 }
-                // field("Country/Region Code"; Rec."Country/Region Code")
-                // {
-                //     ApplicationArea = All;
-                //     ToolTip = 'Specifies the country/region code.';
-                // }
                 field("GPS Coordinates"; Rec."GPS Coordinates")
                 {
                     ApplicationArea = All;
@@ -142,33 +136,45 @@ page 50101 "Property Card"
                 ApplicationArea = All;
                 SubPageLink = "Property No." = FIELD("Property ID");
             }
-
+            part(PropertyCharges; "Property Charges Subform")
+            {
+                ApplicationArea = All;
+                SubPageLink = "Property No." = field("Property ID");
+            }
+            cuegroup(TotalProperties)
+            {
+                Visible = false;
+                Caption = 'Total Properties';
+                field("Total Properties"; Rec."Total Properties")
+                {
+                    ApplicationArea = Suite;
+                    DrillDownPageID = "Property List";
+                }
+            }
         }
-
-
 
         area(factboxes)
         {
-
             part("Attached Documents List"; "Doc. Attachment List Factbox")
             {
-
                 Visible = true;
                 ApplicationArea = All;
                 Caption = 'Documents';
                 UpdatePropagation = Both;
                 SubPageLink = "Table ID" = const(Database::Property),
                               "No." = field("Property ID");
-
-
-
+            }
+            systempart(Control1900383207; Links)
+            {
+                ApplicationArea = RecordLinks;
+            }
+            systempart(Control1905767507; Notes)
+            {
+                ApplicationArea = Notes;
             }
         }
-
-
-
-
     }
+
     actions
     {
         area(Navigation)
@@ -194,12 +200,51 @@ page 50101 "Property Card"
                         DocumentAttachmentDetails.RunModal();
                     end;
                 }
+            }
+        }
+        area(Processing)
+        {
+            action(SetupCharge)
+            {
+                Caption = 'Setup additional service and utility charges';
+                Image = SetupList;
+                ApplicationArea = All;
+                Promoted = true;
+                PromotedCategory = Process;
 
+                trigger OnAction()
+                var
+                    PropertyCharge: Record "Charge Setup";
+                    PropertyChargePage: Page "Property Charge List";
+                begin
+                    // Set filter to show only charges for this property
+                    PropertyCharge.SetRange("Property No.", Rec."Property ID");
 
+                    // Open the Property Charge list page filtered for this property
+                    PropertyChargePage.SetTableView(PropertyCharge);
+                    PropertyChargePage.RunModal();
+                end;
             }
 
-        }
+            action(ManageCharges)
+            {
+                Caption = 'Manage Property Charges';
+                //Image = Charges;
+                ApplicationArea = All;
+                Promoted = true;
+                PromotedCategory = Process;
 
+                trigger OnAction()
+                var
+                    PropertyCharge: Record "Property Charge";
+                    ChargeSetup: Record "Charge Setup";
+                    ChargeSetupPage: Page "Property Charge List";
+                begin
+                    // Open the Charge Setup page to manage available charge types
+                    ChargeSetupPage.RunModal();
+                end;
+            }
+        }
     }
 
     trigger OnQueryClosePage(CloseAction: Action): Boolean
@@ -208,7 +253,4 @@ page 50101 "Property Card"
     begin
         PropertyUnit.ValidateUnitNo(Rec."Property ID");
     end;
-
-
-
 }

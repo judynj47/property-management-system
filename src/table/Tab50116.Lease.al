@@ -16,18 +16,57 @@ table 50116 "Lease"
         {
             Caption = 'Tenant No.';
             DataClassification = CustomerContent;
-            TableRelation = Customer;
+            TableRelation = Customer."No." where("Tenant Category" = filter('Residential|Commercial'));
 
             trigger OnValidate()
             var
                 CustRec: Record Customer;
                 TenantUnitRec: Record "Tenant Unit Link";
+                UnitRec: Record Unit;
+                PropertyRec: Record Property;
             begin
-                // Fetch tenant name automatically
-                if CustRec.Get("Tenant No.") then
-                    "Tenant Name" := CustRec.Name
-                else
+                // Fetch tenant details from Customer table extension
+                if CustRec.Get("Tenant No.") then begin
+                    "Tenant Name" := CustRec.Name;
+                    "Unit No." := CustRec."Unit No.";
+                    "Property No." := CustRec."Current Property No.";
+                    "Rent Amount" := CustRec."Rent Amount";
+
+                    // Get Property Name and Owner details from Property table
+                    if "Property No." <> '' then begin
+                        if PropertyRec.Get("Property No.") then begin
+                            "Property Name" := PropertyRec."Property Name";
+                            "Owner No." := PropertyRec."Owner No.";
+
+                            // Get Owner Name from Vendor table
+                            UpdateOwnerName();
+
+
+                        end;
+                    end else begin
+                        Clear("Property Name");
+                        Clear("Owner No.");
+                        Clear("Owner Name");
+                        Clear("Utility Charge");
+                        Clear("Service Charge");
+                    end;
+
+                    // Update rent amount from unit if not set in customer
+                    if "Rent Amount" = 0 then
+                        UpdateRentAmountFromUnit();
+
+                end else begin
+                    // Clear all fields if tenant not found
                     Clear("Tenant Name");
+                    Clear("Unit No.");
+                    Clear("Property No.");
+                    Clear("Property Name");
+                    Clear("Owner No.");
+                    Clear("Owner Name");
+                    Clear("Rent Amount");
+                    Clear("Utility Charge");
+                    Clear("Service Charge");
+                end;
 
                 // Maintain Tenant-Unit relationship
                 if xRec."Unit No." <> '' then begin
@@ -41,15 +80,13 @@ table 50116 "Lease"
                     TenantUnitRec."Tenant No." := "Tenant No.";
                     TenantUnitRec."Tenant Name" := "Tenant Name";
                     TenantUnitRec."Unit No." := "Unit No.";
-                    TenantUnitRec."Start Date" := "Start Date";
-                    TenantUnitRec."End Date" := "End Date";
+                    TenantUnitRec."Move-in Date" := "Start Date";
+                    TenantUnitRec."Move-out Date" := "End Date";
                     TenantUnitRec."Rent Amount" := "Rent Amount";
                     TenantUnitRec.Insert(true);
                 end;
             end;
         }
-
-
         field(3; "Property No."; Code[20])
         {
             Caption = 'Property No.';
@@ -59,25 +96,28 @@ table 50116 "Lease"
             trigger OnValidate()
             var
                 PropertyRec: Record Property;
-                OwnerRec: Record Vendor;
             begin
                 if PropertyRec.Get("Property No.") then begin
+                    "Property Name" := PropertyRec."Property Name";
                     "Owner No." := PropertyRec."Owner No.";
-                    if OwnerRec.Get(PropertyRec."Owner No.") then
-                        "Owner Name" := OwnerRec.Name;
-                end;
+                    UpdateOwnerName();
 
+                    // Auto-calculate utility and service charges when property changes
+                    //CalculateUtilityAndServiceCharges();
+                end else begin
+                    Clear("Property Name");
+                    Clear("Owner No.");
+                    Clear("Owner Name");
+                    Clear("Utility Charge");
+                    Clear("Service Charge");
+                end;
             end;
         }
-
         field(4; "Unit No."; Code[20])
         {
             Caption = 'Unit No.';
             DataClassification = CustomerContent;
-            //TableRelation = Unit;
             TableRelation = Unit where("Property No." = field("Property No."));
-
-
         }
         field(5; "Start Date"; Date)
         {
@@ -99,13 +139,11 @@ table 50116 "Lease"
             Caption = 'Rent Amount';
             DataClassification = CustomerContent;
             AutoFormatType = 1;
-            //TableRelation = Unit."Rent Amount";
         }
         field(9; "Security Deposit"; Decimal)
         {
             Caption = 'Security Deposit';
             DataClassification = CustomerContent;
-
         }
         field(10; "Payment Frequency"; Enum "Payment Frequency")
         {
@@ -123,12 +161,67 @@ table 50116 "Lease"
             Caption = 'Renewal Option';
             DataClassification = CustomerContent;
         }
-        field(13; "Utilities & Service Charges"; Decimal)
+        field(13; "Utility Charge"; Decimal)
         {
-            Caption = 'Utilities & Service Charges';
+            Caption = 'Utility Charge';
             DataClassification = CustomerContent;
             AutoFormatType = 1;
+            Editable = false;
+
+            trigger OnValidate()
+            var
+                PropertyChargeRec: Record "Property Charge";
+                TotalUtilityCharge: Decimal;
+            begin
+                // Calculate total utility charges for this property
+                TotalUtilityCharge := 0;
+                PropertyChargeRec.Reset();
+                PropertyChargeRec.SetRange("Property No.", "Property No.");
+                PropertyChargeRec.SetRange("Charge Type", PropertyChargeRec."Charge Type"::Utility);
+                if PropertyChargeRec.FindSet() then begin
+                    repeat
+                        TotalUtilityCharge += PropertyChargeRec.Amount;
+                    until PropertyChargeRec.Next() = 0;
+                    "Utility Charge" := TotalUtilityCharge;
+                end else begin
+                    Clear("Utility Charge");
+                end;
+            end;
         }
+        field(27; "Service Charge"; Decimal)
+        {
+            Caption = 'Service Charge';
+            DataClassification = CustomerContent;
+            AutoFormatType = 1;
+            Editable = false;
+
+            trigger OnValidate()
+            var
+                PropertyChargeRec: Record "Property Charge";
+                TotalServiceCharge: Decimal;
+            begin
+                // Calculate total service charges for this property
+                TotalServiceCharge := 0;
+                PropertyChargeRec.Reset();
+                PropertyChargeRec.SetRange("Property No.", "Property No.");
+                PropertyChargeRec.SetRange("Charge Type", PropertyChargeRec."Charge Type"::Service);
+                if PropertyChargeRec.FindSet() then begin
+                    repeat
+                        TotalServiceCharge += PropertyChargeRec.Amount;
+                    until PropertyChargeRec.Next() = 0;
+                    "Service Charge" := TotalServiceCharge;
+                end else begin
+                    Clear("Service Charge");
+                end;
+            end;
+        }
+        // field(28; "Total Additional Charges"; Decimal)
+        // {
+        //     Caption = 'Total Additional Charges';
+        //     DataClassification = CustomerContent;
+        //     AutoFormatType = 1;
+        //     Editable = false;
+        // }
         field(14; "Lease Status"; Enum "Lease Status")
         {
             Caption = 'Lease Status';
@@ -159,7 +252,6 @@ table 50116 "Lease"
         {
             Caption = 'Previous Lease No.';
             DataClassification = CustomerContent;
-            TableRelation = Lease;
         }
         field(20; "Created Date"; DateTime)
         {
@@ -176,8 +268,6 @@ table 50116 "Lease"
         field(22; "Owner No."; Code[50])
         {
             DataClassification = CustomerContent;
-            Editable = false;
-            //TableRelation = Vendor where("No." = field("Property No."));
         }
         field(23; "Renewal Notice Date"; Date)
         {
@@ -191,7 +281,10 @@ table 50116 "Lease"
         field(25; "Owner Name"; Text[100])
         {
             DataClassification = CustomerContent;
-            Editable = false;
+        }
+        field(26; "Property Name"; Text[100])
+        {
+            DataClassification = CustomerContent;
         }
     }
 
@@ -201,87 +294,122 @@ table 50116 "Lease"
         {
             Clustered = true;
         }
-        // key(Tenant; "Tenant No.") { }
-        // key(Unit; "Unit No.") { }
-        // key(Status; "Lease Status") { }
-        // key(Dates; "Start Date", "End Date") { }
     }
 
-    // trigger OnInsert()
-    // var
-    //     NoSeriesMgt: Codeunit "No. Series";
-    //     PropertySetup: Record "Property Setup";
-    // begin
-
-    //     if "No." = '' then
-    //         PropertySetup.Get();
-    //     PropertySetup.TestField("Lease No.");
-
-    //     Rec."No." := NoSeriesMgt.GetNextNo(PropertySetup."Lease No.", 0D, true)
-
-    // end;
     trigger OnInsert()
     var
         NoSeriesMgt: Codeunit "No. Series";
         PropertySetup: Record "Property Setup";
-        TenantUnitLink: Record "Tenant Unit Link";
         UnitRec: Record Unit;
+        CustomerRec: Record Customer;
     begin
+        // Assign Lease No if empty
         if "No." = '' then begin
             PropertySetup.Get();
             PropertySetup.TestField("Lease No.");
             "No." := NoSeriesMgt.GetNextNo(PropertySetup."Lease No.", 0D, true);
         end;
 
-        if ("Tenant No." <> '') and ("Unit No." <> '') then begin
-            TenantUnitLink.Init();
-            TenantUnitLink."Tenant No." := "Tenant No.";
-            TenantUnitLink."Unit No." := "Unit No.";
-            TenantUnitLink."Start Date" := "Start Date";
-            TenantUnitLink."End Date" := "End Date";
-            TenantUnitLink."Rent Amount" := "Rent Amount";
-            TenantUnitLink.Insert(true);
-        end;
-
-        // Update Unit Lease No.
+        // Update the Unit with the Lease No.
         if "Unit No." <> '' then begin
             if UnitRec.Get("Unit No.") then begin
-                UnitRec.Validate("Lease No.", "No.");
-                UnitRec.Modify(true);
+                UnitRec."Lease No." := "No.";
+                UnitRec.Modify(false);
             end;
         end;
+
+        // Update Customer with current lease information
+        if "Tenant No." <> '' then begin
+            if CustomerRec.Get("Tenant No.") then begin
+                CustomerRec."Current Lease No." := "No.";
+                CustomerRec."Current Unit No." := "Unit No.";
+                CustomerRec."Current Property No." := "Property No.";
+                CustomerRec."Move-in Date" := "Start Date";
+                CustomerRec."Rent Amount" := "Rent Amount";
+                CustomerRec."Security Deposit Amount" := "Security Deposit";
+                CustomerRec.Modify(false);
+            end;
+        end;
+        CalculateChargesFromProperty();
+
     end;
-
-
-
-
-    // trigger OnModify()
-    // begin
-    //     UpdateDuration();
-    // end;
 
     trigger OnModify()
     var
         UnitRec: Record Unit;
+        CustomerRec: Record Customer;
     begin
-        if "Lease Status" = "Lease Status"::Active then begin
+        // Update Unit Status based on Lease Status
+        if "Unit No." <> '' then begin
             if UnitRec.Get("Unit No.") then begin
-                UnitRec.Validate("Unit Status", UnitRec."Unit Status"::Occupied);
-                UnitRec.Modify();
-            end;
-        end else
-            if "Lease Status" = "Lease Status"::Expired then begin
-                if UnitRec.Get() then begin
-                    UnitRec.Validate("Unit Status", UnitRec."Unit Status"::Vacant);
-                    UnitRec.Modify();
-
+                case "Lease Status" of
+                    "Lease Status"::Active, "Lease Status"::Renewed:
+                        begin
+                            UnitRec.Validate("Unit Status", UnitRec."Unit Status"::Occupied);
+                            UnitRec.Modify(false);
+                        end;
+                    "Lease Status"::Expired, "Lease Status"::Terminated:
+                        begin
+                            UnitRec.Validate("Unit Status", UnitRec."Unit Status"::Vacant);
+                            UnitRec.Modify(false);
+                        end;
                 end;
             end;
-        begin
-            UpdateDuration();
-
         end;
 
+        // Update Customer information when lease changes
+        if "Tenant No." <> '' then begin
+            if CustomerRec.Get("Tenant No.") then begin
+                CustomerRec."Current Lease No." := "No.";
+                CustomerRec."Current Unit No." := "Unit No.";
+                CustomerRec."Current Property No." := "Property No.";
+                CustomerRec."Rent Amount" := "Rent Amount";
+
+                // Update tenant status based on lease status
+                case "Lease Status" of
+                    "Lease Status"::Active, "Lease Status"::Renewed:
+                        CustomerRec."Tenant Status" := CustomerRec."Tenant Status"::Active;
+                    "Lease Status"::Expired, "Lease Status"::Terminated:
+                        CustomerRec."Tenant Status" := CustomerRec."Tenant Status"::Past;
+                end;
+
+                CustomerRec.Modify(false);
+            end;
+        end;
+
+        UpdateDuration();
+        begin
+            if (xRec."Property No." <> "Property No.") then
+                CalculateChargesFromProperty();
+        end;
+    end;
+
+    trigger OnDelete()
+    var
+        UnitRec: Record Unit;
+        CustomerRec: Record Customer;
+    begin
+        // Clear Lease link from Unit
+        if "Unit No." <> '' then begin
+            if UnitRec.Get("Unit No.") then begin
+                UnitRec.Validate("Lease No.", '');
+                UnitRec.Validate("Unit Status", UnitRec."Unit Status"::Vacant);
+                UnitRec.Modify(false);
+            end;
+        end;
+
+        // Clear current lease info from Customer
+        if "Tenant No." <> '' then begin
+            if CustomerRec.Get("Tenant No.") then begin
+                if CustomerRec."Current Lease No." = "No." then begin
+                    CustomerRec."Current Lease No." := '';
+                    CustomerRec."Current Unit No." := '';
+                    CustomerRec."Current Property No." := '';
+                    CustomerRec."Tenant Status" := CustomerRec."Tenant Status"::Past;
+                    CustomerRec.Modify(false);
+                end;
+            end;
+        end;
     end;
 
     local procedure UpdateDuration()
@@ -290,5 +418,37 @@ table 50116 "Lease"
             Duration := ("End Date" - "Start Date") div 30;
     end;
 
+    local procedure UpdateRentAmountFromUnit()
+    var
+        UnitRec: Record Unit;
+    begin
+        if "Unit No." <> '' then
+            if UnitRec.Get("Unit No.") then
+                "Rent Amount" := UnitRec."Rent Amount";
+    end;
+
+    local procedure UpdateOwnerName()
+    var
+        VendorRec: Record Vendor;
+    begin
+        if "Owner No." <> '' then begin
+            if VendorRec.Get("Owner No.") then
+                "Owner Name" := VendorRec.Name
+            else
+                Clear("Owner Name");
+        end else begin
+            Clear("Owner Name");
+        end;
+    end;
+
+
+
+
+    local procedure CalculateChargesFromProperty()
+    begin
+        // This will trigger the OnValidate triggers which calculate the charges
+        Validate("Utility Charge");
+        Validate("Service Charge");
+    end;
 
 }

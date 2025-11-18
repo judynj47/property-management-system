@@ -25,14 +25,22 @@ page 50140 "Tenant Subform"
                 {
                     ToolTip = 'Specifies the value of the Tenant Name field.', Comment = '%';
                 }
-                field("Start Date"; Rec."Start Date")
+                field("Move-in Date"; Rec."Move-in Date")
                 {
-                    ToolTip = 'Specifies the value of the Lease Start Date field.', Comment = '%';
+                    ToolTip = 'Specifies the value of the Move-in Date field.', Comment = '%';
                 }
-                field("End Date"; Rec."End Date")
+                field("Move-out Date"; Rec."Move-out Date")
                 {
-                    ToolTip = 'Specifies the value of the Lease End Date field.', Comment = '%';
+                    ToolTip = 'Specifies the value of the Move-out Date field.', Comment = '%';
                 }
+                // field("Start Date"; Rec."Start Date")
+                // {
+                //     ToolTip = 'Specifies the value of the Lease Start Date field.', Comment = '%';
+                // }
+                // field("End Date"; Rec."End Date")
+                // {
+                //     ToolTip = 'Specifies the value of the Lease End Date field.', Comment = '%';
+                // }
                 field("Rent Amount"; Rec."Rent Amount")
                 {
                     ToolTip = 'Specifies the value of the Rent Amount field.', Comment = '%';

@@ -35,6 +35,31 @@ page 50125 "Property SetUp"
                 {
                     ToolTip = 'Specifies the value of the Customer Nos field.', Comment = '%';
                 }
+                field("Termination ID"; Rec."Termination ID")
+                {
+                    ToolTip = 'Specifies the value of the Termination ID field.', Comment = '%';
+                }
+                field("Maintenance Request Nos."; Rec."Maintenance Request Nos.")
+                {
+                    ToolTip = 'Specifies the value of the Maintenance Request Nos. field.', Comment = '%';
+                }
+                field("Revenue G/L Account"; Rec."Revenue G/L Account")
+                {
+                    ToolTip = 'Specifies the value of the Revenue G/L Account field.', Comment = '%';
+                }
+                field("Receivables G/L Account"; Rec."Receivables G/L Account")
+                {
+                    ToolTip = 'Specifies the value of the Receivables G/L Account field.', Comment = '%';
+                }
+
+                field("Journal Batch Name"; Rec."Journal Batch Name")
+                {
+                    ToolTip = 'Specifies the value of the Journal Batch Name field.', Comment = '%';
+                }
+                field("Journal Template Name"; Rec."Journal Template Name")
+                {
+                    ToolTip = 'Specifies the value of the Journal Template Name field.', Comment = '%';
+                }
                 field("Rent Invoice No."; Rec."Rent Invoice No.")
                 {
                     ToolTip = 'Specifies the value of the Rent Invoice No. field.', Comment = '%';
@@ -42,6 +67,22 @@ page 50125 "Property SetUp"
                 field("Rent G/L account No."; Rec."Rent G/L account No.")
                 {
                     ToolTip = 'Specifies the value of the Rent G/L account No. field.', Comment = '%';
+                }
+                field("Penalty G/L Account"; Rec."Penalty G/L Account")
+                {
+                    ToolTip = 'Specifies the value of the Penalty G/L Account field.', Comment = '%';
+                }
+                field("Service Charge G/L Account"; Rec."Service Charge G/L Account")
+                {
+                    ToolTip = 'Specifies the value of the Service Charge G/L Account field.', Comment = '%';
+                }
+                field("Utility G/L Account"; Rec."Utility G/L Account")
+                {
+                    ToolTip = 'Specifies the value of the Utility G/L Account field.', Comment = '%';
+                }
+                field("Tax G/L Account"; Rec."Tax G/L Account")
+                {
+                    ToolTip = 'Specifies the value of the Tax G/L Account field.', Comment = '%';
                 }
 
                 // field("Clause ID"; Rec."Clause ID")

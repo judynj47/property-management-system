@@ -21,15 +21,26 @@ report 50136 "Lease Agreement Report"
             {
 
             }
+            column(Tenant_Name; "Tenant Name")
+            {
+
+            }
             column(PropertyNo; "Property No.")
             {
 
+            }
+            column(PropertyName; "Property Name")
+            {
             }
             column(UnitNo; "Unit No.")
             {
 
             }
             column(OwnerNo; "Owner No.")
+            {
+
+            }
+            column(Owner_Name; "Owner Name")
             {
 
             }
@@ -65,9 +76,11 @@ report 50136 "Lease Agreement Report"
             {
 
             }
-            column(Utilities; "Utilities & Service Charges")
+            column(UtilityCharge_Lease; "Utility Charge")
             {
-
+            }
+            column(ServiceCharge_Lease; "Service Charge")
+            {
             }
 
 

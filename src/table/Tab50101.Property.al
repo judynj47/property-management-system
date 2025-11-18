@@ -121,7 +121,7 @@ table 50101 "Property"
         field(13; "Owner No."; Code[20])
         {
             DataClassification = ToBeClassified;
-            TableRelation = Vendor where("No." = field("Owner No."));
+            TableRelation = Vendor where("Property Owner" = const(true));
 
             trigger OnValidate()
             var
@@ -219,6 +219,21 @@ table 50101 "Property"
             DataClassification = CustomerContent;
             TableRelation = Unit;
         }
+        field(39; "Total Properties"; Integer)
+        {
+            FieldClass = FlowField;
+            CalcFormula = count(Property);
+        }
+        field(40; "Service Charge"; Decimal)
+        {
+            DataClassification = CustomerContent;
+        }
+        field(41; "Utility Charge"; Decimal)
+        {
+            DataClassification = CustomerContent;
+        }
+
+
     }
 
     keys

@@ -34,20 +34,34 @@ table 50146 "Tenant Unit Link"
             TableRelation = Unit;
         }
 
-        field(4; "Start Date"; Date)
-        {
-            Caption = 'Lease Start Date';
-            TableRelation = Lease."Start Date" where("Start Date" = field("Start Date"));
-        }
+        // field(4; "Start Date"; Date)
+        // {
+        //     Caption = 'Lease Start Date';
+        //     TableRelation = Lease."Start Date" where("Start Date" = field("Start Date"));
+        // }
 
-        field(5; "End Date"; Date)
+        // field(5; "End Date"; Date)
+        // {
+        //     Caption = 'Lease End Date';
+        //     TableRelation = Lease."End Date" where("End Date" = field("End Date"));
+        // }
+        // field(6; "Rent Amount"; Decimal)
+        // {
+        //     TableRelation = Lease."Rent Amount" where("Rent Amount" = field("Rent Amount"));
+        // }
+        field(50109; "Move-in Date"; Date)
         {
-            Caption = 'Lease End Date';
-            TableRelation = Lease."End Date" where("End Date" = field("End Date"));
+            Caption = 'Move-in Date';
+            DataClassification = CustomerContent;
         }
-        field(6; "Rent Amount"; Decimal)
+        field(50110; "Move-out Date"; Date)
         {
-            TableRelation = Lease."Rent Amount" where("Rent Amount" = field("Rent Amount"));
+            Caption = 'Move-out Date';
+            DataClassification = CustomerContent;
+        }
+        field(50119; "Rent Amount"; Decimal)
+        {
+            DataClassification = CustomerContent;
         }
     }
 

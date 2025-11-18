@@ -18,7 +18,17 @@ page 50124 "Property Management RoleCenter"
             {
                 ApplicationArea = Suite;
             }
+            part(TotalProperties; "Property Cue")
+            {
+                ApplicationArea = Suite;
+            }
+            part(TotalTenants; "Tenant Cue")
+            {
+                ApplicationArea = Suite;
+
+            }
         }
+
     }
 
     actions
@@ -29,18 +39,20 @@ page 50124 "Property Management RoleCenter"
             {
                 Caption = 'Setups';
 
-                action("Properties")
-                {
-                    ApplicationArea = All;
-                    Caption = 'Properties';
-                    RunObject = page "Property List";
-
-                }
                 action("Units")
                 {
                     ApplicationArea = All;
                     Caption = 'Units';
                     RunObject = page "Unit List";
+
+                }
+
+
+                action("Properties")
+                {
+                    ApplicationArea = All;
+                    Caption = 'Properties';
+                    RunObject = page "Property List";
 
                 }
 
@@ -67,6 +79,13 @@ page 50124 "Property Management RoleCenter"
                     RunObject = page "Special Clauses List";
 
                 }
+                action("Property Charges Setup")
+                {
+                    ApplicationArea = All;
+                    Caption = 'Property Charges Setup';
+                    RunObject = page "Property Charge List";
+
+                }
 
 
                 action("Property Setup")
@@ -74,6 +93,11 @@ page 50124 "Property Management RoleCenter"
                     ApplicationArea = All;
                     RunObject = page "Property SetUp";
                 }
+                // action("Unit Maintenance")
+                // {
+                //     ApplicationArea = All;
+                //     RunObject = page "Maintenance Request List";
+                // }
 
             }
 
@@ -106,46 +130,124 @@ page 50124 "Property Management RoleCenter"
                     }
                 }
 
-                action("&LeaseAgreement")
-                {
-                    Caption = 'Lease Agreement';
-                    ApplicationArea = All;
+                // action("&LeaseAgreement")
+                // {
+                //     Caption = 'Lease Agreement';
+                //     ApplicationArea = All;
 
-                    RunObject = page "Lease list";
-                }
+                //     RunObject = page "Lease list";
+                // }
 
             }
 
 
 
-            group("Leases & Tenants")
+            group("Tenant Management")
             {
-                action(Leases)
-                {
-                    ApplicationArea = All;
-                    Caption = 'Leases';
-                    RunObject = page "Lease List";
-                }
-
                 action(Tenants)
                 {
                     ApplicationArea = All;
-                    Caption = 'Tenants';
+                    Caption = 'All Tenants';
                     RunObject = page "Tenant List";
+                }
+                action(ActiveTenants)
+                {
+                    ApplicationArea = All;
+                    Caption = 'Active Tenants';
+                    RunObject = page "Active Tenant List";
+                }
+                action(PastTenants)
+                {
+                    ApplicationArea = All;
+                    Caption = 'Past Tenants';
+                    RunObject = page "Past Tenant List";
+                }
+
+
+
+            }
+            group("Lease Management")
+            {
+                // action(Leases)
+                // {
+                //     ApplicationArea = All;
+                //     Caption = 'Leases';
+                //     RunObject = page "Lease List";
+                // }
+                action(DraftLeases)
+                {
+                    ApplicationArea = All;
+                    Caption = 'Draft Leases';
+                    RunObject = page "Draft Leases";
+                }
+                action(ActiveLeases)
+                {
+                    ApplicationArea = All;
+                    Caption = 'Active Leases';
+                    RunObject = page "Active Leases";
+                }
+                action(ExpiredLeases)
+                {
+                    ApplicationArea = All;
+                    Caption = 'Expired Leases';
+                    RunObject = page "Expired Leases";
+                }
+                action(RenewedLeases)
+                {
+                    ApplicationArea = All;
+                    Caption = 'Renewed Leases';
+                    RunObject = page "Renewed Leases";
+                }
+                action(TerminatedLeases)
+                {
+                    ApplicationArea = All;
+                    Caption = 'Terminated Leases';
+                    RunObject = page "Terminated Leases";
+                }
+
+
+
+            }
+            group("Billing")
+            {
+                action(Invoicing)
+                {
+                    Caption = 'All rent bills';
+                    ApplicationArea = All;
+                    RunObject = page "Rent Invoice List";
+                }
+                action(Invoice)
+                {
+                    ApplicationArea = All;
+                    RunObject = page "Invoice List";
                 }
                 action(Receipts)
                 {
                     ApplicationArea = All;
-                    RunObject = page "Rent Invoice List";
+                    RunObject = page "Receipt List";
                 }
 
+            }
+            group("Terminations")
+            {
+                action(Termination)
+                {
+                    ApplicationArea = All;
+                    RunObject = page "Termination List";
 
+                }
             }
         }
 
 
         area(Creation)
         {
+            action(Unit)
+            {
+                ApplicationArea = Basic, Suite;
+                RunObject = Page "Unit Card";
+                RunPageMode = Create;
+            }
             action(Property)
             {
                 ApplicationArea = Basic, Suite;

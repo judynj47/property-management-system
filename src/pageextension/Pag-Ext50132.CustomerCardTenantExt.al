@@ -215,6 +215,18 @@ pageextension 50132 "Customer Card Tenant Ext" extends "Customer Card"
                 RunPageLink = "Sell-to Customer No." = field("No.");
                 //RunPageView = where("Rent Invoice" = const(true));
             }
+            action(ChangeRequest)
+            {
+                ApplicationArea = All;
+                Image = Change;
+                trigger OnAction()
+                var
+                    TenantPage: Page "Tenant Card";
+                begin
+                    if Codeunit.Run(Codeunit::"Transfer Fields") then
+                        TenantPage.RunModal();
+                end;
+            }
         }
     }
 
@@ -224,6 +236,13 @@ pageextension 50132 "Customer Card Tenant Ext" extends "Customer Card"
                             (Rec."Tenant Category" <> Rec."Tenant Category"::" ") or
                             (Rec."Tenant Status" <> Rec."Tenant Status"::Prospective);
     end;
+
+    // trigger OnOpenPage()
+    // begin
+    //     Codeunit.Run(Codeunit::"Transfer Fields");
+    //     Message('Done!');
+    // end;
+
 
     var
         ShowTenantDetails: Boolean;

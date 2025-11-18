@@ -4,14 +4,18 @@ enum 50101 "Document Status"
 
     value(0; Open)
     {
+        Caption = 'Open';
     }
-    value(1; "Pending Approval")
+    value(1; Released)
     {
+        Caption = 'Released';
     }
-    value(2; Approved)
+    value(2; "Pending Approval")
     {
+        Caption = 'Pending Approval';
     }
-    value(3; Rejected)
+    value(3; Posted)
     {
+        Caption = 'Posted';
     }
 }

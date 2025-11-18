@@ -21,39 +21,31 @@ table 50106 Unit
             trigger OnValidate()
             var
                 PropertyUnit: Record "Property Unit";
-                IsInserted: Boolean;
-
             begin
-                // Delete old link if Property No. was changed
-                if xRec."Property No." <> '' then begin
-                    PropertyUnit.Reset();
-                    PropertyUnit.SetRange("Unit No.", Rec."No.");
-                    PropertyUnit.DeleteAll();
+                // Delete old Property Unit record if Property No. was changed
+                if (xRec."Property No." <> '') and (xRec."Property No." <> "Property No.") then begin
+                    if PropertyUnit.Get(xRec."Property No.", "No.") then
+                        PropertyUnit.Delete();
                 end;
 
-                // Insert new Property Unit record when Property No. is entered
+                // Create/Update Property Unit record when Property No. is entered
                 if "Property No." <> '' then begin
-                    PropertyUnit.Init();
-                    PropertyUnit."Property No." := "Property No.";
-                    PropertyUnit."Unit No." := "No.";
+                    if not PropertyUnit.Get("Property No.", "No.") then begin
+                        PropertyUnit.Init();
+                        PropertyUnit."Property No." := "Property No.";
+                        PropertyUnit."Unit No." := "No.";
+                    end;
                     PropertyUnit.Description := Description;
                     PropertyUnit."Unit Size" := "Unit Size";
                     PropertyUnit."Unit Status" := "Unit Status";
                     PropertyUnit."Date Available" := "Date Available";
                     PropertyUnit."Rent Amount" := "Rent Amount";
-                    PropertyUnit.Insert(true);
+
+                    if not PropertyUnit.Insert() then
+                        PropertyUnit.Modify();
                 end;
-
-
             end;
         }
-
-        // field(2; "Property No."; Code[20])
-        // {
-        //     Caption = 'Property No.';
-        //     DataClassification = CustomerContent;
-        //     TableRelation = Property;
-        // }
         field(3; Description; Text[100])
         {
             Caption = 'Description';
@@ -70,40 +62,18 @@ table 50106 Unit
             Caption = 'Unit Status';
             DataClassification = CustomerContent;
             Editable = false;
-
         }
         field(6; "Rent Amount"; Decimal)
         {
             Caption = 'Rent Amount';
             DataClassification = CustomerContent;
             AutoFormatType = 1;
-
         }
         field(8; "Lease No."; Code[20])
         {
             Editable = false;
             Caption = 'Lease No.';
             DataClassification = CustomerContent;
-            TableRelation = Lease;
-            trigger OnValidate()
-            var
-                LeaseRec: Record Lease;
-                IsInserted: Boolean;
-            begin
-                if xRec."No." <> '' then begin
-                    LeaseRec.Reset();
-                    LeaseRec.SetRange("No.", Rec."Lease No.");
-                    LeaseRec.DeleteAll();
-                end;
-                if "No." <> '' then begin
-                    LeaseRec.Init();
-                    LeaseRec."No." := "Lease No.";
-                    LeaseRec."Rent Amount" := "Rent Amount";
-                    LeaseRec.Insert(true);
-                end;
-
-            end;
-
         }
         field(9; "Date Available"; Date)
         {
@@ -113,6 +83,19 @@ table 50106 Unit
         field(10; Blocked; Boolean)
         {
             Caption = 'Blocked';
+            DataClassification = CustomerContent;
+        }
+        field(11; "Penalty Charge"; Decimal)
+        {
+            Editable = false;
+            DecimalPlaces = 1 : 1;
+        }
+        field(12; "Service Charge"; Decimal)
+        {
+            DataClassification = CustomerContent;
+        }
+        field(13; "Utility Charge"; Decimal)
+        {
             DataClassification = CustomerContent;
         }
     }
@@ -125,28 +108,43 @@ table 50106 Unit
         }
     }
 
-    fieldgroups
-    {
-
-        // Add changes to field groups here
-    }
     trigger OnInsert()
     var
         NoSeriesMgt: Codeunit "No. Series";
         PropertySetup: Record "Property Setup";
-
     begin
-
-        if "No." = '' then
+        if "No." = '' then begin
             PropertySetup.Get();
-        PropertySetup.TestField("Unit No.");
-
-        Rec."No." := NoSeriesMgt.GetNextNo(PropertySetup."Unit No.", 0D, true)
-
+            PropertySetup.TestField("Unit No.");
+            "No." := NoSeriesMgt.GetNextNo(PropertySetup."Unit No.", 0D, true);
+        end;
     end;
 
+    trigger OnModify()
+    var
+        PropertyUnit: Record "Property Unit";
+    begin
+        CalculatePenalty();
 
+        // Sync changes to Property Unit table
+        if "Property No." <> '' then begin
+            if PropertyUnit.Get("Property No.", "No.") then begin
+                PropertyUnit.Description := Description;
+                PropertyUnit."Unit Size" := "Unit Size";
+                PropertyUnit."Unit Status" := "Unit Status";
+                PropertyUnit."Date Available" := "Date Available";
+                PropertyUnit."Rent Amount" := "Rent Amount";
+                PropertyUnit."Penalty Charge" := "Penalty Charge";
+                PropertyUnit.Modify();
+            end;
+        end;
+    end;
 
-
-
+    local procedure CalculatePenalty()
+    begin
+        if "Rent Amount" > 0 then
+            "Penalty Charge" := ("Rent Amount" * 0.1)
+        else
+            "Penalty Charge" := 0;
+    end;
 }
