@@ -139,6 +139,7 @@ page 50101 "Property Card"
             part(PropertyCharges; "Property Charges Subform")
             {
                 ApplicationArea = All;
+                Editable = true;
                 SubPageLink = "Property No." = field("Property ID");
             }
             cuegroup(TotalProperties)

@@ -37,10 +37,14 @@ report 50135 "Rent Invoicing Report"
             column(Receipt_Amount; "Receipt Amount")
             {
             }
+            column(Companylogo; companyinfo.Picture)
+            {
+
+            }
 
             dataitem(RentInvoiceLine; "Rent Invoice Line")
             {
-                DataItemLink = "Invoice No." = field("Rent Invoice No.");
+                //DataItemLink = "Invoice No." = field("Rent Invoice No.");
                 DataItemTableView = sorting("Invoice No.", "Line No.");
 
                 column(Charge_Type; "Charge Type")
@@ -55,6 +59,7 @@ report 50135 "Rent Invoicing Report"
                 column(GL_Account_No; "GL Account No.")
                 {
                 }
+                
             }
         }
     }
@@ -81,7 +86,15 @@ report 50135 "Rent Invoicing Report"
         }
     }
 
+    trigger OnPreReport()
+    begin
+        companyinfo.Get();
+        companyinfo.CalcFields(Picture);
+    end;
+
+
     var
         ShowDetails: Boolean;
+        companyinfo: Record "Company Information";
 }
 

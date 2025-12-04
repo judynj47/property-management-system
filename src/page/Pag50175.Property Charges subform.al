@@ -27,7 +27,7 @@ page 50176 "Property Charges Subform"
                 field("Charge Type"; Rec."Charge Type")
                 {
                     ToolTip = 'Specifies the value of the Charge Type field.', Comment = '%';
-                    Editable = false;
+                    //Editable = false;
                 }
                 field("GL Account No."; Rec."GL Account No.")
                 {

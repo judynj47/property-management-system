@@ -42,20 +42,12 @@ page 50157 "Rent Invoice Lines"
         }
     }
 
-    local procedure GetNextLineNo(InvoiceNo: Code[20]): Integer
-    var
-        RentInvoiceLine: Record "Rent Invoice Line";
-    begin
-        RentInvoiceLine.SetRange("Invoice No.", InvoiceNo);
-        if RentInvoiceLine.FindLast() then
-            exit(RentInvoiceLine."Line No." + 10000)
-        else
-            exit(10000);
-    end;
+
 
     procedure SetInvoiceNo(InvoiceNo: Code[20])
     begin
         Rec.SetRange("Invoice No.", InvoiceNo);
+        Rec.SetRange("isReceiptLine", false);
         CurrPage.Update(false);
     end;
 
@@ -77,6 +69,17 @@ page 50157 "Rent Invoice Lines"
         CurrPage.SetRecord(RentInvoiceLine);
 
         Rec."Invoice No." := Rec."Invoice No.";
+    end;
+
+    local procedure GetNextLineNo(InvoiceNo: Code[20]): Integer
+    var
+        RentInvoiceLine: Record "Rent Invoice Line";
+    begin
+        RentInvoiceLine.SetRange("Invoice No.", InvoiceNo);
+        if RentInvoiceLine.FindLast() then
+            exit(RentInvoiceLine."Line No." + 10000)
+        else
+            exit(10000);
     end;
 
 }

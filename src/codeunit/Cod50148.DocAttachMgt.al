@@ -7,6 +7,7 @@ codeunit 50148 "Document Attachment"
         UnitRec: Record Unit;
         CustomerRec: Record Customer;
         LeaseRec: Record Lease;
+        TenantAppRec: Record "Tenant Application";
     begin
         case DocumentAttachment."Table ID" of
             Database::Property:
@@ -22,12 +23,12 @@ codeunit 50148 "Document Attachment"
                         RecRef.GetTable(UnitRec);
 
                 end;
-            // Database::Customer:
-            //     begin
-            //         RecRef.Open(Database::Customer);
-            //         if CustomerRec.Get(DocumentAttachment."No.") then
-            //             RecRef.GetTable(CustomerRec);
-            //     end;
+            Database::"Tenant Application":
+                begin
+                    RecRef.Open(Database::"Tenant Application");
+                    if CustomerRec.Get(DocumentAttachment."No.") then
+                        RecRef.GetTable(TenantAppRec);
+                end;
             Database::Lease:
                 begin
                     RecRef.Open(Database::Lease);
@@ -61,6 +62,13 @@ codeunit 50148 "Document Attachment"
                     DocumentAttachment."No." := FieldRef.Value;
 
                 end;
+            Database::"Tenant Application":
+                begin
+                    FieldRef := RecRef.Field(1);
+                    DocumentAttachment."No." := FieldRef.Value;
+
+                end;
+
             Database::Lease:
                 begin
                     FieldRef := RecRef.Field(1);

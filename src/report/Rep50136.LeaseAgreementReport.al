@@ -10,6 +10,8 @@ report 50136 "Lease Agreement Report"
     {
         dataitem(Lease; Lease)
         {
+            DataItemTableView = sorting("No.");
+
             // Temporarily comment out filters for testing
             // RequestFilterFields = "No.";
 

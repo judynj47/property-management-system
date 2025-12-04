@@ -1,4 +1,4 @@
-report 50137 "Rent Invoice"
+report 50137 "Receipt"
 {
     UsageCategory = ReportsAndAnalysis;
     ApplicationArea = All;
@@ -82,8 +82,8 @@ report 50137 "Rent Invoice"
     {
         layout(LayoutName)
         {
-            Type = RDLC;
-            LayoutFile = 'rentinvoice.rdl';
+            Type = Excel;
+            LayoutFile = 'Receipt.xlsx';
         }
     }
     trigger OnPreReport()

@@ -19,6 +19,23 @@
             "tenant": "default",
             "usePublicURLFromServer": true,
             "schemaUpdateMode": "ForceSync"
+        },
+
+        {
+            "name": "Judy Debug",
+            "request": "attach",
+            "type": "al",
+            "server": "http://localhost:8080/BC270/",
+            "serverInstance": "BC270",
+            "authentication": "Windows",
+            "port": 25449,
+            "breakOnError": true,
+            "breakOnRecordWrite": false,
+            "enableLongRunningSqlStatements": true,
+            "enableSqlInformationDebugger": true,
+            "longRunningSqlStatementsThreshold": 500,
+            "numberOfSqlStatements": 10,
+            "breakOnNext": "WebClient"
         }
     ]
 }

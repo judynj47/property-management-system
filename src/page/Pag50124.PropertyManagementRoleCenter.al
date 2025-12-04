@@ -93,6 +93,12 @@ page 50124 "Property Management RoleCenter"
                     ApplicationArea = All;
                     RunObject = page "Property SetUp";
                 }
+                action("Rent Setup")
+                {
+                    ApplicationArea = All;
+                    RunObject = page "Rent Setup";
+                }
+
                 // action("Unit Maintenance")
                 // {
                 //     ApplicationArea = All;
@@ -208,25 +214,37 @@ page 50124 "Property Management RoleCenter"
 
 
             }
-            group("Billing")
+            group("Rent Management")
             {
-                action(Invoicing)
+                group("Billing")
                 {
-                    Caption = 'All rent bills';
-                    ApplicationArea = All;
-                    RunObject = page "Rent Invoice List";
-                }
-                action(Invoice)
-                {
-                    ApplicationArea = All;
-                    RunObject = page "Invoice List";
-                }
-                action(Receipts)
-                {
-                    ApplicationArea = All;
-                    RunObject = page "Receipt List";
-                }
+                    action(Invoicing)
+                    {
+                        Caption = 'All rent bills';
+                        ApplicationArea = All;
+                        RunObject = page "Rent Invoice List";
+                    }
+                    action(Invoice)
+                    {
+                        ApplicationArea = All;
+                        RunObject = page "Invoice List";
+                    }
+                    action(PostedInvoices)
+                    {
+                        Caption = 'Posted Rent Invoices';
+                        ApplicationArea = All;
+                        RunObject = page "Posted Rent Invoices";
+                    }
+                    group(Receipting)
+                    {
+                        action(Receipts)
+                        {
+                            ApplicationArea = All;
+                            RunObject = page "Receipt List";
+                        }
+                    }
 
+                }
             }
             group("Terminations")
             {

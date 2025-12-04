@@ -84,6 +84,10 @@ page 50125 "Property SetUp"
                 {
                     ToolTip = 'Specifies the value of the Tax G/L Account field.', Comment = '%';
                 }
+                field("Receipt Bank Account"; Rec."Receipt Bank Account")
+                {
+                    ToolTip = 'Specifies the value of the Default Receipt Bank Account field.', Comment = '%';
+                }
 
                 // field("Clause ID"; Rec."Clause ID")
                 // {

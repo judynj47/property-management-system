@@ -1,6 +1,5 @@
 codeunit 50170 "Rent Invoice Calculation"
 {
-    SingleInstance = true;
 
     procedure CalculateInvoiceCharges(var RentInvoice: Record "Rent Invoice")
     var
@@ -45,7 +44,6 @@ codeunit 50170 "Rent Invoice Calculation"
 
         LineNo += 10000;
 
-        // 2. Service charge - prefer Lease, otherwise property setup/charges
         // if LeaseRec."Service Charge" > 0 then begin
         //     TotalServiceCharge := LeaseRec."Service Charge";
         //     InsertInvoiceLine(RentInvoice."Rent Invoice No.", LineNo, 'Service Charge', TotalServiceCharge, RentInvoiceLine."Charge Type"::Service, GetGLAccountForCharge(RentInvoiceLine."Charge Type"::Service, LeaseRec."Property No."));
@@ -86,7 +84,6 @@ codeunit 50170 "Rent Invoice Calculation"
         TotalPenaltyAmount := UnitRec."Penalty Charge";
         if TotalPenaltyAmount > 0 then begin
             InsertInvoiceLine(RentInvoice."Rent Invoice No.", LineNo, 'Late Payment Penalty (10%)', TotalPenaltyAmount, RentInvoiceLine."Charge Type"::Penalty, GetGLAccountForCharge(RentInvoiceLine."Charge Type"::Penalty, LeaseRec."Property No."));
-            // do not increment LineNo further; penalties are usually last
         end;
 
         // Update header fields
@@ -153,4 +150,51 @@ codeunit 50170 "Rent Invoice Calculation"
         PropertySetup.TestField("Revenue G/L Account");
         exit(PropertySetup."Revenue G/L Account");
     end;
+
+    procedure CopyInvoiceLinesToReceipt(SourceInvoiceNo: Code[20]; ReceiptNo: Code[20])
+    var
+        Src: Record "Rent Invoice Line";
+        Tgt: Record "Rent Invoice Line";
+        NextLineNo: Integer;
+    begin
+        // Do not duplicate
+        Tgt.Reset();
+        Tgt.SetRange("Invoice No.", ReceiptNo);
+        if Tgt.FindFirst() then
+            exit;
+
+        // Get source lines
+        Src.Reset();
+        Src.SetRange("Invoice No.", SourceInvoiceNo);
+        if not Src.FindSet() then
+            Error('No invoice lines found for %1.', SourceInvoiceNo);
+
+        // Determine next line no
+        if Tgt.FindLast() then
+            NextLineNo := Tgt."Line No." + 10000
+        else
+            NextLineNo := 10000;
+
+        repeat
+            Tgt.Init();
+            Tgt."Invoice No." := ReceiptNo; 
+            Tgt."Line No." := NextLineNo;
+
+            Tgt.Description := Src.Description;
+            Tgt.Amount := Src.Amount;
+            Tgt."Charge Type" := Src."Charge Type";
+            Tgt."GL Account No." := Src."GL Account No.";
+            Tgt."Linked Lease No." := Src."Linked Lease No.";
+
+            Tgt."IsReceiptLine" := true;
+            Tgt."Source Invoice Line No." := Src."Line No.";
+
+            Tgt.Insert(true);
+
+            NextLineNo += 10000;
+        until Src.Next() = 0;
+    end;
+
+
+
 }

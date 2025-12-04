@@ -56,28 +56,36 @@ page 50104 "Receipt lines"
     procedure SetInvoiceNo(InvoiceNo: Code[20])
     begin
         Rec.SetRange("Invoice No.", InvoiceNo);
+        Rec.SetRange("IsReceiptLine", true); //11.19.25
         CurrPage.Update(false);
     end;
 
     trigger OnNewRecord(BelowxRec: Boolean)
-    var
-        RentInvoiceLine: Record "Rent Invoice Line";
-        LineNo: Integer;
-
     begin
-        if Rec."Invoice No." = '' then
-            Error('Please save the invoice header first.');
-
-        LineNo := GetNextLineNo(Rec."Invoice No.");
-        RentInvoiceLine.Init();
-        RentInvoiceLine."Invoice No." := Rec."Invoice No.";
-        RentInvoiceLine."Line No." := LineNo;
-        RentInvoiceLine.Insert();
-        RentInvoiceLine.Find();
-        CurrPage.SetRecord(RentInvoiceLine);
-
-        Rec."Invoice No." := Rec."Invoice No.";
+        Rec."IsReceiptLine" := true;
     end;
+
+
+
+    // trigger OnNewRecord(BelowxRec: Boolean)
+    // var
+    //     RentInvoiceLine: Record "Rent Invoice Line";
+    //     LineNo: Integer;
+
+    // begin
+    //     if Rec."Invoice No." = '' then
+    //         Error('Please save the invoice header first.');
+
+    //     LineNo := GetNextLineNo(Rec."Invoice No.");
+    //     RentInvoiceLine.Init();
+    //     RentInvoiceLine."Invoice No." := Rec."Invoice No.";
+    //     RentInvoiceLine."Line No." := LineNo;
+    //     RentInvoiceLine.Insert();
+    //     RentInvoiceLine.Find();
+    //     CurrPage.SetRecord(RentInvoiceLine);
+
+    //     Rec."Invoice No." := Rec."Invoice No.";
+    // end;
 
 
 }

@@ -117,6 +117,31 @@ page 50134 "Tenant Application Card"
                 }
             }
         }
+        area(factboxes)
+        {
+
+            part("Attached Documents List"; "Doc. Attachment List Factbox")
+            {
+
+                Visible = true;
+                ApplicationArea = All;
+                Caption = 'Documents';
+                UpdatePropagation = Both;
+                SubPageLink = "Table ID" = const(Database::"Tenant Application"),
+                              "No." = field("Application ID");
+
+
+
+            }
+            systempart(Control1900383207; Links)
+            {
+                ApplicationArea = RecordLinks;
+            }
+            systempart(Control1905767507; Notes)
+            {
+                ApplicationArea = Notes;
+            }
+        }
     }
 
     actions

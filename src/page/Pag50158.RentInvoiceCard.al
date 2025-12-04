@@ -15,7 +15,7 @@ page 50158 "Rent Invoice Card"
                 {
                     ApplicationArea = All;
                     ShowMandatory = true;
-                    
+
                 }
                 field("Tenant No."; Rec."Tenant No.")
                 {
@@ -77,6 +77,10 @@ page 50158 "Rent Invoice Card"
                     ApplicationArea = All;
                     Editable = false;
                 }
+                field("Total Charges"; Rec."Total Charges")
+                {
+                    ToolTip = 'Specifies the value of the Total Charges field.', Comment = '%';
+                }
                 field("Document Type"; Rec."Document Type")
                 {
                     ApplicationArea = All;
@@ -84,6 +88,11 @@ page 50158 "Rent Invoice Card"
                 field("Process Automatically"; Rec."Process Automatically")
                 {
                     ApplicationArea = All;
+                }
+                field(Paid; Rec.Paid)
+                {
+                    ToolTip = 'Specifies the value of the Paid field.', Comment = '%';
+                    Editable = false;
                 }
                 field("Document Status"; Rec."Document Status")
                 {
@@ -128,30 +137,9 @@ page 50158 "Rent Invoice Card"
                 end;
             }
 
-            action(PostInvoice)
-            {
-                Caption = 'Post Invoice (Gen. Journal)';
-                Image = Post;
-                ApplicationArea = All;
-                Promoted = true;
-                PromotedCategory = Process;
-                PromotedIsBig = true;
-
-                trigger OnAction()
-                var
-                    BillingCU: Codeunit "Rent Billing";
-                begin
-                    if Rec."Document Status" = Rec."Document Status"::Posted then
-                        Error('This invoice has already been posted.');
-
-                    BillingCU.ProcessInvoice(Rec);
-                    CurrPage.Update();
-                end;
-            }
-
             action(PostInvoiceSales)
             {
-                Caption = 'Post Invoice (Sales Invoice)';
+                Caption = 'Post Invoice';
                 Image = Post;
                 ApplicationArea = All;
                 Promoted = true;
@@ -260,12 +248,8 @@ page 50158 "Rent Invoice Card"
         RentInvoiceList: Page "Rent Invoice List";
         ReceiptList: Page "Receipt List";
     begin
-        // This sets the default document type based on which list opened the card
-        // When creating from Rent Invoice List, default to Invoice
-        // When creating from Receipt List, default to Receipt
-        // Otherwise, default to Invoice
         if Rec."Document Type" = Rec."Document Type"::" " then
             Rec."Document Type" := Rec."Document Type"::Invoice;
     end;
-    
+
 }

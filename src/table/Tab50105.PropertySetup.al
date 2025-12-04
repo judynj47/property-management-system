@@ -102,7 +102,13 @@ table 50105 "Property Setup"
             TableRelation = "G/L Account";
             Caption = 'Tax G/L Account';
         }
-        
+        field(20; "Receipt Bank Account"; Code[20])
+        {
+            DataClassification = CustomerContent;
+            TableRelation = "Bank Account";
+            Caption = 'Default Receipt Bank Account';
+        }
+
 
 
         // field(8; "Clause ID"; Code[20])

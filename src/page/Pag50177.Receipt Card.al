@@ -16,13 +16,41 @@ page 50177 "Receipt Card"
                     ApplicationArea = All;
                     ShowMandatory = true;
                     Caption = 'Receipt No.';
-                    TableRelation = Customer."No." where(Tenant = const(true));
+                    TableRelation = "Rent Invoice"."Rent Invoice No." where(
+        "Tenant No." = FIELD("Invoiced Tenant No."),
+        "Paid" = const(false),
+        "Document Type" = const(Invoice)
+    );
+
+                }
+                field("Source Invoice No."; Rec."Source Invoice No.")
+                {
+                    ToolTip = 'Specifies the value of the Source Invoice No. field.', Comment = '%';
+                    trigger OnValidate()
+                    begin
+                        CurrPage.Update(true);
+                    end;
+                }
+
+                field("Invoiced Tenant No."; Rec."Invoiced Tenant No.")
+                {
+                    ToolTip = 'Specifies the value of the Invoiced Tenant No. field.', Comment = '%';
+                    trigger OnValidate()
+
+                    begin
+                        //Rec.Validate("Invoiced Tenant No.", Rec."Invoiced Tenant No."); 11.19.25
+                        CurrPage.Update(true);
+                    end;
+
+
                 }
                 field("Tenant No."; Rec."Tenant No.")
                 {
+                    //Visible = false;
                     ApplicationArea = All;
                     ShowMandatory = true;
                     Importance = Promoted;
+                    TableRelation = Customer."No." where(Tenant = const(true));
 
                     trigger OnValidate()
                     begin
@@ -36,6 +64,7 @@ page 50177 "Receipt Card"
                 }
                 field("Lease No."; Rec."Lease No.")
                 {
+                    TableRelation = Lease."No." where("Tenant No." = field("Invoiced Tenant No."));
                     ApplicationArea = All;
                     Importance = Promoted;
 
@@ -68,32 +97,44 @@ page 50177 "Receipt Card"
                     // }
                     field("Posting Date"; Rec."Posting Date")
                     {
-                        Caption = 'Due Date';
+
                         ApplicationArea = All;
                         ShowMandatory = true;
+                        Caption = 'Receipted Date';
                     }
                 }
-                field("Receipt Amount"; Rec."Receipt Amount")
+                group("Payment Details")
                 {
-                    ApplicationArea = All;
-                    Editable = false;
+                    field("Receipt Amount"; Rec."Receipt Amount")
+                    {
+                        ApplicationArea = All;
+                        Editable = false;
+                    }
+                    field("Document Type"; Rec."Document Type")
+                    {
+                        ApplicationArea = All;
+                    }
+
+                    field(Paid; Rec.Paid)
+                    {
+                        ToolTip = 'Specifies the value of the Paid field.', Comment = '%';
+                    }
+                    field("Payment Mode"; Rec."Payment Mode")
+                    {
+                        ToolTip = 'Specifies the value of the Payment Mode field.', Comment = '%';
+                    }
+
+                    field("Document Status"; Rec."Document Status")
+                    {
+                        ApplicationArea = All;
+                        Editable = false;
+                    }
+
                 }
-                field("Document Type"; Rec."Document Type")
-                {
-                    ApplicationArea = All;
-                }
-                // field("Process Automatically"; Rec."Process Automatically")
-                // {
-                //     ApplicationArea = All;
-                // }
-                field("Document Status"; Rec."Document Status")
-                {
-                    ApplicationArea = All;
-                    Editable = false;
-                }
+
             }
 
-            part(RentInvoiceLines; "Receipt lines")
+            part(ReceiptLines; "Receipt lines")
             {
                 ApplicationArea = All;
                 SubPageLink = "Invoice No." = FIELD("Rent Invoice No.");
@@ -106,6 +147,19 @@ page 50177 "Receipt Card"
     {
         area(Processing)
         {
+            action(GetInvoice)
+            {
+                trigger OnAction()
+                begin
+                    if Rec."Source Invoice No." = '' then
+                        Error('Select Invoice no.');
+
+                    Rec.AutoPopulateReceiptLines();
+                    CurrPage.ReceiptLines.Page.Update();
+                    CurrPage.Update();
+                    Message('Receipt lines populated from invoice %1.', Rec."Source Invoice No.");
+                end;
+            }
 
 
             action(PostReceipt)
@@ -120,11 +174,22 @@ page 50177 "Receipt Card"
                 trigger OnAction()
                 var
                     BillingCU: Codeunit "Rent Billing";
+                    InvoiceRec: Record "Rent Invoice";
                 begin
                     if Rec."Document Status" = Rec."Document Status"::Posted then
                         Error('This invoice has already been posted.');
-
+                    Rec.Modify(true);
                     BillingCU.ProcessReceipt(Rec);
+
+                    //BillingCU.ProcessReceipt(Rec);
+
+                    if Rec."Rent Invoice No." <> '' then begin
+                        if InvoiceRec.Get(Rec."Rent Invoice No.") then begin
+                            InvoiceRec."Paid" := true;
+                            InvoiceRec.Modify();
+                        end;
+                    end;
+
                     CurrPage.Update();
                 end;
             }
@@ -133,7 +198,7 @@ page 50177 "Receipt Card"
         }
         area(Reporting)
         {
-            action(PrintInvoice)
+            action(PrintReceipt)
             {
                 ApplicationArea = All;
                 Caption = 'Print Receipt';
@@ -146,7 +211,7 @@ page 50177 "Receipt Card"
                     RentInvoice: Record "Rent Invoice";
                 begin
                     RentInvoice.SetRange("Rent Invoice No.", Rec."Rent Invoice No.");
-                    Report.Run(Report::"Rent Invoicing Report", true, false, RentInvoice);
+                    Report.Run(Report::Receipt, true, false, RentInvoice);
                 end;
             }
         }
@@ -164,6 +229,8 @@ page 50177 "Receipt Card"
         Rec."Date Invoiced" := WorkDate();
         Rec."Document Status" := Rec."Document Status"::Open;
         Rec."Document Type" := Rec."Document Type"::Receipt;
+        Rec.Validate("Document Type", Rec."Document Type"::Receipt);
+
 
 
         // Set default Document Type based on which list page opened this card
@@ -182,7 +249,7 @@ page 50177 "Receipt Card"
     trigger OnAfterGetCurrRecord()
     begin
         // Update action enablement based on current record state
-        CurrPage.RentInvoiceLines.Page.SetInvoiceNo(Rec."Rent Invoice No.");
+        CurrPage.ReceiptLines.Page.SetInvoiceNo(Rec."Rent Invoice No.");
     end;
 
     local procedure SetDefaultDocumentType()
@@ -190,10 +257,7 @@ page 50177 "Receipt Card"
         RentInvoiceList: Page "Rent Invoice List";
         ReceiptList: Page "Receipt List";
     begin
-        // This sets the default document type based on which list opened the card
-        // When creating from Rent Invoice List, default to Invoice
-        // When creating from Receipt List, default to Receipt
-        // Otherwise, default to Invoice
+
         if Rec."Document Type" = Rec."Document Type"::" " then
             Rec."Document Type" := Rec."Document Type"::Receipt;
     end;
@@ -201,12 +265,17 @@ page 50177 "Receipt Card"
     //fix
     trigger OnOpenPage()
     var
-        RentInvoiceCalculation: Codeunit "Rent Invoice Calculation";
+    // RentInvoiceCalculation: Codeunit "Rent Invoice Calculation";
+    // InvRec: Record "Rent Invoice";
+    // LineRec: Record "Rent Invoice Line";
     begin
-        RentInvoiceCalculation.CalculateInvoiceCharges(Rec);
-        CurrPage.RentInvoiceLines.Page.Update();
-        CurrPage.Update();
-        Message('All charges calculated successfully. Rent, Penalty, Utility, and Service charges have been added.');
+
+
+        // Rec."Receipt Amount" := InvRec.CalculateTotalAmount();
+        // //RentInvoiceCalculation.CalculateInvoiceCharges(Rec);
+        // CurrPage.ReceiptLines.Page.Update();
+        // CurrPage.Update();
+        //Message('All charges calculated successfully. Rent, Penalty, Utility, and Service charges have been added.');
     end;
 
 }
